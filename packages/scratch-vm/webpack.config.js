@@ -128,7 +128,7 @@ const playgroundBuilder = webBuilder.clone()
     ]));
 
 module.exports = [
+    playgroundBuilder.get(), // webpack-dev-server only looks at the first configuration
     nodeBuilder.get(),
-    webBuilder.get(),
-    playgroundBuilder.get()
+    webBuilder.get()
 ];
