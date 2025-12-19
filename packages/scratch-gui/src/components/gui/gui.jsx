@@ -318,6 +318,7 @@ const GUIComponent = props => {
                         role="main"
                         aria-label="Editor"
                         className={styles.editorWrapper}
+                        element="main"
                     >
                         <Tabs
                             forceRenderTabPanel
@@ -326,6 +327,7 @@ const GUIComponent = props => {
                             selectedTabClassName={tabClassNames.tabSelected}
                             selectedTabPanelClassName={tabClassNames.tabPanelSelected}
                             onSelect={onActivateTab}
+                            // TODO: Can we render this as a <nav> element?
 
                             // TODO: focusTabOnClick should be true for accessibility, but currently conflicts
                             // with nudge operations in the paint editor. We'll likely need to manage focus
@@ -338,12 +340,22 @@ const GUIComponent = props => {
                             // Actual behavior: the Code or Sounds tab is now focused
                             focusTabOnClick={false}
                         >
+                            {/* TODO: Is the extra Box needed here? */}
                             <Box
                                 role="region"
                                 aria-label="Tab List"
                             >
-                                <TabList className={tabClassNames.tabList}>
-                                    <Tab className={tabClassNames.tab}>
+                                <TabList
+                                    className={tabClassNames.tabList}
+                                    role="tablist"
+                                >
+                                    <Tab
+                                        className={tabClassNames.tab}
+                                        tabIndex="0"
+                                        role="tab"
+                                    >
+                                        {/* TODO: The tabs are <li>, is that semantically correct?
+                                            Should we use buttons instead? IMO no, because it also doesnt sit right */}
                                         <img
                                             draggable={false}
                                             src={codeIcon}
@@ -357,6 +369,8 @@ const GUIComponent = props => {
                                     <Tab
                                         className={tabClassNames.tab}
                                         onClick={onActivateCostumesTab}
+                                        role="tab"
+                                        tabIndex="0"
                                     >
                                         <img
                                             draggable={false}
@@ -379,6 +393,8 @@ const GUIComponent = props => {
                                     <Tab
                                         className={tabClassNames.tab}
                                         onClick={onActivateSoundsTab}
+                                        role="tab"
+                                        tabIndex="0"
                                     >
                                         <img
                                             draggable={false}
@@ -392,11 +408,15 @@ const GUIComponent = props => {
                                     </Tab>
                                 </TabList>
                             </Box>
-                            <TabPanel className={tabClassNames.tabPanel}>
+                            <TabPanel
+                                className={tabClassNames.tabPanel}
+                                role="tabpanel"
+                            >
                                 <Box
                                     className={styles.blocksWrapper}
                                     role="region"
                                     aria-label="Code Editor Panel"
+                                    element="section"
                                 >
                                     <Blocks
                                         key={`${blocksId}/${colorMode}/${theme}`}
@@ -425,7 +445,10 @@ const GUIComponent = props => {
                                     <Watermark />
                                 </Box>
                             </TabPanel>
-                            <TabPanel className={tabClassNames.tabPanel}>
+                            <TabPanel
+                                className={tabClassNames.tabPanel}
+                                role="tabpanel"
+                            >
                                 {costumesTabVisible ? <CostumeTab
                                     ariaLabel={targetIsStage ? 'Backdrops Editor Panel' : 'Costumes Editor Panel'}
                                     ariaRole="region"
@@ -434,7 +457,10 @@ const GUIComponent = props => {
                                     onNewLibraryCostumeClick={onNewLibraryCostumeClick}
                                 /> : null}
                             </TabPanel>
-                            <TabPanel className={tabClassNames.tabPanel}>
+                            <TabPanel
+                                className={tabClassNames.tabPanel}
+                                role="tabpanel"
+                            >
                                 {soundsTabVisible ?
                                     <SoundTab
                                         ariaLabel="Sounds Editor Panel"
@@ -456,6 +482,7 @@ const GUIComponent = props => {
                         role="complementary"
                         aria-label="Stage and Target"
                         className={classNames(styles.stageAndTargetWrapper, styles[stageSize])}
+                        element="aside"
                     >
                         <StageWrapper
                             isFullScreen={isFullScreen}
@@ -470,6 +497,7 @@ const GUIComponent = props => {
                             className={styles.targetWrapper}
                             role="region"
                             aria-label="Target Pane"
+                            element="section"
                         >
                             <TargetPane
                                 stageSize={stageSize}

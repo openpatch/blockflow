@@ -28,6 +28,7 @@ const SpriteSelectorItem = props => {
                 disabled={props.preventContextMenu}
                 asChild
             >
+                {/* Does it make sense for this to be a button */}
                 <div
                     className={classNames(props.className, styles.spriteSelectorItem, {
                         [styles.isSelected]: props.selected

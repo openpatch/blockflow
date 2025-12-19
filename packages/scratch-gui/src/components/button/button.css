@@ -10,6 +10,10 @@
     padding-left: .75rem;
     padding-right: .75rem;
     user-select: none;
+    /* Maybe inherit would be better for these as well */
+    background: none;
+    border: none;
+    color: inherit;
 }
 
 .icon {

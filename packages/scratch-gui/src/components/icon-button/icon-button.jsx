@@ -10,7 +10,7 @@ const IconButton = ({
     title,
     onClick
 }) => (
-    <div
+    <button
         className={classNames(
             styles.container,
             className,
@@ -27,7 +27,7 @@ const IconButton = ({
         <div className={styles.title}>
             {title}
         </div>
-    </div>
+    </button>
 );
 
 IconButton.propTypes = {

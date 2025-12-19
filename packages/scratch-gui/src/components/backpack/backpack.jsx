@@ -59,7 +59,8 @@ const Backpack = ({
 }) => {
     const intl = useIntl();
     return (
-        <div
+        // TODO: <aside> might also make sense, but section is probbaly more suitable
+        <section
             className={styles.backpackContainer}
             role={ariaRole}
             aria-label={ariaLabel}
@@ -157,7 +158,7 @@ const Backpack = ({
                     )}
                 </div>
             ) : null}
-        </div>
+        </section>
     );
 };
 

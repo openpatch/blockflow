@@ -53,6 +53,7 @@ const Selector = props => {
         <Box
             className={styles.wrapper}
             componentRef={containerRef}
+            element="aside"
         >
             <Box className={styles.listArea}>
                 {items.map((item, index) => (
