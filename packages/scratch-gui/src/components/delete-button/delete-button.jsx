@@ -6,7 +6,6 @@ import styles from './delete-button.css';
 import deleteIcon from './icon--delete.svg';
 
 const DeleteButton = props => (
-    // TODO: Make the focus visible
     <button
         aria-label="Delete"
         className={classNames(

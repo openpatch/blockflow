@@ -17,6 +17,7 @@ const StopAllComponent = function (props) {
         <button
             className={styles.stopAllButton}
             onClick={onClick}
+            {...componentProps}
         >
             <img
                 className={classNames(
@@ -29,7 +30,6 @@ const StopAllComponent = function (props) {
                 draggable={false}
                 src={stopAllIcon}
                 title={title}
-                {...componentProps}
             />
         </button>
     );

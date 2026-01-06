@@ -17,6 +17,7 @@ const GreenFlagComponent = function (props) {
         <button
             className={styles.greenFlagButton}
             onClick={onClick}
+            {...componentProps}
         >
             <img
                 className={classNames(
@@ -29,7 +30,6 @@ const GreenFlagComponent = function (props) {
                 draggable={false}
                 src={greenFlagIcon}
                 title={title}
-                {...componentProps}
             />
         </button>
     );
