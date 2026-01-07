@@ -4,6 +4,8 @@ exports[`SpriteSelectorItemComponent does not have a close box when not selected
 <div
   class="ponies"
   data-state="closed"
+  role="button"
+  tabindex="0"
 >
   <div>
     <div>
@@ -25,6 +27,8 @@ exports[`SpriteSelectorItemComponent matches snapshot when given a number and de
 <div
   class="ponies undefined"
   data-state="closed"
+  role="button"
+  tabindex="0"
 >
   <div>
     5
@@ -65,6 +69,8 @@ exports[`SpriteSelectorItemComponent matches snapshot when selected 1`] = `
 <div
   class="ponies undefined"
   data-state="closed"
+  role="button"
+  tabindex="0"
 >
   <div>
     <div>
