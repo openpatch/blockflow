@@ -80,7 +80,7 @@
     "semantic-release": "19.0.5",
     "tap": "21.5.0",
     "terser-webpack-plugin": "5.3.16",
-    "webpack": "5.103.0",
+    "webpack": "5.104.1",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.2.2"
   }
