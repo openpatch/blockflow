@@ -1640,6 +1640,20 @@ class Runtime extends EventEmitter {
         this.storage = storage;
         fetchWithTimeout.setFetch(storage.scratchFetch.scratchFetch);
         this.resetRunId();
+
+        /** @type {Parameters<typeof storage.scratchFetch.createQueue>[1]} */
+        const extensionServiceQueueOptions = {
+            concurrency: 1,
+            burstLimit: 3,
+            sustainRate: 1/4,
+        };
+
+        /** @todo The extensions should probably specify their own queue options (within existing limits) */
+        ['scratch.mit.edu', 'scratch.org'].forEach(scratchDomain => {
+            ['synthesis-service', 'translate-service'].forEach(service => {
+                storage.scratchFetch.createQueue(`${service}.${scratchDomain}`, extensionServiceQueueOptions);
+            });
+        });
     }
 
     // -----------------------------------------------------------------------------
