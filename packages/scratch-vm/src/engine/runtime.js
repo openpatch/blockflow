@@ -1655,7 +1655,7 @@ class Runtime extends EventEmitter {
             burstLimit: 3, // How many actions can be sent in a short time if we haven't done any for a while?
             concurrency: 1, // Number of concurrent connections to the service
             queueCostLimit: 10, // Don't queue more actions than can finish before the `fetchWithTimeout` timeout.
-            sustainRate: 1 / secondsPerAction, // See `secondsPerAction` above.
+            sustainRate: 1 / secondsPerAction // See `secondsPerAction` above.
         };
 
         /** @todo The extensions should probably specify their own queue options (within existing limits) */
