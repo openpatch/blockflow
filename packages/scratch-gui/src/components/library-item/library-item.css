@@ -209,3 +209,12 @@
 [dir="rtl"] .coming-soon-text {
     transform: translate(calc(-2 * $space), calc(2 * $space));
 }
+
+.member-asset-icon {
+    position: absolute;
+    left: 0.625rem;
+    top: 0.625rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    z-index: 1;
+}

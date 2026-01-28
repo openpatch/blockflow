@@ -1,4 +1,4 @@
-import {FormattedMessage} from 'react-intl';
+import {defineMessages, FormattedMessage, injectIntl} from 'react-intl';
 import PropTypes from 'prop-types';
 import bindAll from 'lodash.bindall';
 import React from 'react';
@@ -11,9 +11,18 @@ import classNames from 'classnames';
 
 import bluetoothIconURL from './bluetooth.svg';
 import internetConnectionIconURL from './internet-connection.svg';
+import memberAssetIconURL from './lib-icon--member-asset.svg';
+import intlShape from '../../lib/intlShape';
 
 import {PLATFORM} from '../../lib/platform.js';
 
+const messages = defineMessages({
+    memberAssetImgAlt: {
+        defaultMessage: 'Blue star icon indicating an asset is for members',
+        description: 'Alt text for star icon indicating an asset is for members',
+        id: 'gui.libraryItem.memberAssetImgAlt'
+    }
+});
  
 class LibraryItemComponent extends React.PureComponent {
     constructor (props) {
@@ -158,6 +167,13 @@ class LibraryItemComponent extends React.PureComponent {
                 onMouseEnter={this.props.showPlayButton ? null : this.props.onMouseEnter}
                 onMouseLeave={this.props.showPlayButton ? null : this.props.onMouseLeave}
             >
+                {this.props.isMemberOnly && (
+                    <img
+                        src={memberAssetIconURL}
+                        className={styles.memberAssetIcon}
+                        alt={this.props.intl.formatMessage(messages.memberAssetImgAlt)}
+                    />
+                )}
                 {/* Layers of wrapping is to prevent layout thrashing on animation */}
                 <Box className={styles.libraryItemImageContainerWrapper}>
                     <Box
@@ -183,6 +199,7 @@ class LibraryItemComponent extends React.PureComponent {
 
 
 LibraryItemComponent.propTypes = {
+    intl: intlShape,
     bluetoothRequired: PropTypes.bool,
     collaborator: PropTypes.string,
     description: PropTypes.oneOfType([
@@ -210,7 +227,8 @@ LibraryItemComponent.propTypes = {
     onPlay: PropTypes.func.isRequired,
     onStop: PropTypes.func.isRequired,
     platform: PropTypes.oneOf(Object.keys(PLATFORM)),
-    showPlayButton: PropTypes.bool
+    showPlayButton: PropTypes.bool,
+    isMemberOnly: PropTypes.bool
 };
 
 LibraryItemComponent.defaultProps = {
@@ -218,4 +236,7 @@ LibraryItemComponent.defaultProps = {
     showPlayButton: false
 };
 
-export default LibraryItemComponent;
+const IntlLibraryItemComponent = injectIntl(LibraryItemComponent);
+IntlLibraryItemComponent.propTypes = LibraryItemComponent.propTypes;
+
+export default IntlLibraryItemComponent;

@@ -49,11 +49,20 @@ const messages = defineMessages({
         id: `gui.library.prompts`,
         defaultMessage: 'Prompts',
         description: 'Label for prompts category'
+    },
+    membershipTag: {
+        defaultMessage: 'Membership',
+        description: 'Tag for filtering a library for member only assets',
+        id: 'gui.library.membershipTag'
     }
 });
 
 const ALL_TAG = {tag: 'all', intlLabel: messages.allTag};
 const tagListPrefix = [ALL_TAG];
+
+// Membership tag manually added to the tag list if any member-only assets are present.
+// Member-only assets are displayed as a separate tag to allow users to filter by them.
+const MEMBERSHIP_TAG = {tag: 'membership', intlLabel: messages.membershipTag};
 
 /**
  * Find the AssetType which corresponds to a particular file extension. For example, 'png' => AssetType.ImageBitmap.
@@ -113,6 +122,8 @@ const getItemIcons = function (item) {
     }
 };
 
+const getMemberOnlyTags = data => (data && data.some(item => item.isMemberOnly) ? [MEMBERSHIP_TAG] : []);
+
 class LibraryComponent extends React.Component {
     constructor (props) {
         super(props);
@@ -131,7 +142,8 @@ class LibraryComponent extends React.Component {
             playingItem: null,
             filterQuery: '',
             selectedTag: ALL_TAG.tag,
-            loaded: false
+            loaded: false,
+            memberTags: getMemberOnlyTags(props.data)
         };
     }
     componentDidMount () {
@@ -142,6 +154,12 @@ class LibraryComponent extends React.Component {
         if (this.props.setStopHandler) this.props.setStopHandler(this.handlePlayingEnd);
     }
     componentDidUpdate (prevProps, prevState) {
+        if (prevProps.data !== this.props.data) {
+            this.setState({
+                memberTags: getMemberOnlyTags(this.props.data)
+            });
+        }
+
         if (prevState.filterQuery !== this.state.filterQuery ||
             prevState.selectedTag !== this.state.selectedTag) {
             this.scrollToTop();
@@ -276,6 +294,7 @@ class LibraryComponent extends React.Component {
             onMouseEnter={this.handleMouseEnter}
             onMouseLeave={this.handleMouseLeave}
             onSelect={this.handleSelect}
+            isMemberOnly={data.isMemberOnly}
         />);
     }
     renderData (data) {
@@ -339,13 +358,14 @@ class LibraryComponent extends React.Component {
                         )}
                         {this.props.tags &&
                             <div className={styles.tagWrapper}>
-                                {tagListPrefix.concat(this.props.tags).map((tagProps, id) => (
+                                {tagListPrefix.concat(this.props.tags, this.state.memberTags).map((tagProps, id) => (
                                     <TagButton
                                         active={this.state.selectedTag === tagProps.tag.toLowerCase()}
                                         className={classNames(
                                             styles.filterBarItem,
                                             styles.tagButton,
-                                            tagProps.className
+                                            tagProps.className,
+                                            {[styles.membershipTag]: tagProps.tag.toLowerCase() === MEMBERSHIP_TAG.tag}
                                         )}
                                         key={`tag-button-${id}`}
                                         onClick={this.handleTagClick}

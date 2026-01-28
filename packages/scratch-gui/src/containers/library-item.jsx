@@ -154,6 +154,7 @@ class LibraryItem extends React.PureComponent {
                 onMouseLeave={this.handleMouseLeave}
                 onPlay={this.handlePlay}
                 onStop={this.handleStop}
+                isMemberOnly={this.props.isMemberOnly}
             />
         );
     }
@@ -190,7 +191,8 @@ LibraryItem.propTypes = {
     onMouseLeave: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired,
     platform: PropTypes.oneOf(Object.keys(PLATFORM)),
-    showPlayButton: PropTypes.bool
+    showPlayButton: PropTypes.bool,
+    isMemberOnly: PropTypes.bool
 };
 
 export default compose(
