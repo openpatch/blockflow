@@ -208,6 +208,20 @@ const GUIComponent = props => {
     }
 
     useEffect(() => {
+        const handleDocumentClick = () => {
+            // If any element is focused, blur it.
+            // Usually handled automatically but canvas clicks don't seem to blur previous focus.
+            if (document.activeElement) {
+                document.activeElement.blur();
+            }
+        };
+        document.addEventListener('mousedown', handleDocumentClick);
+        return () => {
+            document.removeEventListener('mousedown', handleDocumentClick);
+        };
+    }, []);
+
+    useEffect(() => {
         if (props.platform) {
             // TODO: This uses the imported `setPlatform` directly,
             // but it should probably use the dispatched version from props.
