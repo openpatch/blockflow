@@ -3,7 +3,7 @@ import defaultsDeep from 'lodash.defaultsdeep';
 import PropTypes from 'prop-types';
 import React from 'react';
 import CustomProceduresComponent from '../components/custom-procedures/custom-procedures.jsx';
-import {getColorsForTheme, themeMap} from '../lib/themes';
+import {getColorsForMode, colorModeMap} from '../lib/settings/color-mode';
 import {ScratchBlocks} from 'scratch-blocks';
 import {connect} from 'react-redux';
 
@@ -39,8 +39,8 @@ class CustomProcedures extends React.Component {
         );
 
         const theme = new ScratchBlocks.Theme(
-            this.props.theme,
-            getColorsForTheme(this.props.theme)
+            this.props.colorMode,
+            getColorsForMode(this.props.colorMode)
         );
         workspaceConfig.theme = theme;
         this.workspace = ScratchBlocks.inject(this.blocks, workspaceConfig);
@@ -160,7 +160,7 @@ CustomProcedures.propTypes = {
     isRtl: PropTypes.bool,
     mutator: PropTypes.instanceOf(Element),
     onRequestClose: PropTypes.func.isRequired,
-    theme: PropTypes.oneOf(Object.keys(themeMap)),
+    colorMode: PropTypes.oneOf(Object.keys(colorModeMap)),
     options: PropTypes.shape({
         media: PropTypes.string,
         zoom: PropTypes.shape({

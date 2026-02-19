@@ -1,11 +1,11 @@
 import {ScratchBlocks} from 'scratch-blocks';
-import {defaultColors} from './themes';
+import {defaultColors} from './settings/color-mode';
 
 const categorySeparator = '<sep gap="36"/>';
 
 const blockSeparator = '<sep gap="36"/>'; // At default scale, about 28px
 
- 
+
 const motion = function (isInitialSetup, isStage, targetId, colors) {
     const stageSelected = ScratchBlocks.ScratchMsgs.translate(
         'MOTION_STAGE_SELECTED',
@@ -18,8 +18,8 @@ const motion = function (isInitialSetup, isStage, targetId, colors) {
         'CATEGORY_MOTION',
         'Motion'
     )}" toolboxitemid="motion" colour="${
-    colors.colourPrimary
-}" secondaryColour="${colors.colourTertiary}">
+        colors.colourPrimary
+    }" secondaryColour="${colors.colourTertiary}">
         ${isStage ? `
         <label text="${stageSelected}"></label>
         ` : `
@@ -168,8 +168,8 @@ const looks = function (isInitialSetup, isStage, targetId, costumeName, backdrop
         'CATEGORY_LOOKS',
         'Looks'
     )}" toolboxitemid="looks" colour="${
-    colors.colourPrimary
-}" secondaryColour="${colors.colourTertiary}">
+        colors.colourPrimary
+    }" secondaryColour="${colors.colourTertiary}">
         ${isStage ? '' : `
         <block type="looks_sayforsecs">
             <value name="MESSAGE">
@@ -309,8 +309,8 @@ const sound = function (isInitialSetup, isStage, targetId, soundName, colors) {
         'CATEGORY_SOUND',
         'Sound'
     )}" toolboxitemid="sound" colour="${
-    colors.colourPrimary
-}" secondaryColour="${colors.colourTertiary}">
+        colors.colourPrimary
+    }" secondaryColour="${colors.colourTertiary}">
         <block id="${targetId}_sound_playuntildone" type="sound_playuntildone">
             <value name="SOUND_MENU">
                 <shadow type="sound_sounds_menu">
@@ -370,8 +370,8 @@ const events = function (isInitialSetup, isStage, targetId, colors) {
         'CATEGORY_EVENTS',
         'Events'
     )}" toolboxitemid="events" colour="${
-    colors.colourPrimary
-}" secondaryColour="${colors.colourTertiary}">
+        colors.colourPrimary
+    }" secondaryColour="${colors.colourTertiary}">
         <block type="event_whenflagclicked"/>
         <block type="event_whenkeypressed">
         </block>
@@ -413,9 +413,9 @@ const control = function (isInitialSetup, isStage, targetId, colors) {
     return `
     <category
         name="${ScratchBlocks.ScratchMsgs.translate(
-        'CATEGORY_CONTROL',
-        'Control'
-    )}"
+            'CATEGORY_CONTROL',
+            'Control'
+        )}"
         toolboxitemid="control"
         colour="${colors.colourPrimary}"
         secondaryColour="${colors.colourTertiary}">
@@ -469,9 +469,9 @@ const sensing = function (isInitialSetup, isStage, targetId, colors) {
     return `
     <category
         name="${ScratchBlocks.ScratchMsgs.translate(
-        'CATEGORY_SENSING',
-        'Sensing'
-    )}"
+            'CATEGORY_SENSING',
+            'Sensing'
+        )}"
         toolboxitemid="sensing"
         colour="${colors.colourPrimary}"
         secondaryColour="${colors.colourTertiary}">
@@ -540,6 +540,7 @@ const sensing = function (isInitialSetup, isStage, targetId, colors) {
         <block id="current" type="sensing_current"/>
         <block type="sensing_dayssince2000"/>
         ${blockSeparator}
+        <block id="online" type="sensing_online" />
         <block type="sensing_username"/>
         ${categorySeparator}
     </category>
@@ -554,9 +555,9 @@ const operators = function (isInitialSetup, isStage, targetId, colors) {
     return `
     <category
         name="${ScratchBlocks.ScratchMsgs.translate(
-        'CATEGORY_OPERATORS',
-        'Operators'
-    )}"
+            'CATEGORY_OPERATORS',
+            'Operators'
+        )}"
         toolboxitemid="operators"
         colour="${colors.colourPrimary}"
         secondaryColour="${colors.colourTertiary}">
@@ -746,9 +747,9 @@ const variables = function (isInitialSetup, isStage, targetId, colors) {
     return `
     <category
         name="${ScratchBlocks.ScratchMsgs.translate(
-        'CATEGORY_VARIABLES',
-        'Variables'
-    )}"
+            'CATEGORY_VARIABLES',
+            'Variables'
+        )}"
         toolboxitemid="variables"
         colour="${colors.colourPrimary}"
         secondaryColour="${colors.colourTertiary}"
@@ -762,9 +763,9 @@ const myBlocks = function (isInitialSetup, isStage, targetId, colors) {
     return `
     <category
         name="${ScratchBlocks.ScratchMsgs.translate(
-        'CATEGORY_MYBLOCKS',
-        'My Blocks'
-    )}"
+            'CATEGORY_MYBLOCKS',
+            'My Blocks'
+        )}"
         toolboxitemid="myBlocks"
         colour="${colors.colourPrimary}"
         secondaryColour="${colors.colourTertiary}"
@@ -772,7 +773,7 @@ const myBlocks = function (isInitialSetup, isStage, targetId, colors) {
     </category>
     `;
 };
- 
+
 
 const xmlOpen = '<xml style="display: none">';
 const xmlClose = '</xml>';
@@ -790,7 +791,7 @@ const xmlClose = '</xml>';
  * @param {?string} costumeName - The name of the default selected costume dropdown.
  * @param {?string} backdropName - The name of the default selected backdrop dropdown.
  * @param {?string} soundName -  The name of the default selected sound dropdown.
- * @param {?object} colors - The colors for the theme.
+ * @param {?object} colors - The colors for the color mode.
  * @returns {string} - a ScratchBlocks-style XML document for the contents of the toolbox.
  */
 const makeToolboxXML = function (isInitialSetup, isStage = true, targetId, categoriesXML = [],

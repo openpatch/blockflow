@@ -51,7 +51,7 @@ describe('Menu bar settings', () => {
 
     test('Share button should NOT be enabled', async () => {
         await loadUri(uri);
-        await findByXpath('//div[span[div[span[text()="Share"]]] and @data-tip="tooltip"]');
+        await findByXpath('//div[button[div[span[text()="Share"]]] and @data-tip="tooltip"]');
     });
 
     test('Logo should be clickable', async () => {
@@ -96,7 +96,7 @@ describe('Menu bar settings', () => {
         await findByText('project1-sprite');
     });
 
-    test('Theme picker shows themes', async () => {
+    test('Color mode picker shows color modes', async () => {
         await loadUri(uri);
         await clickXpath(SETTINGS_MENU_XPATH);
         await clickText('Color Mode', scope.menuBar);
@@ -105,7 +105,7 @@ describe('Menu bar settings', () => {
         expect(await (await findByText('High Contrast', scope.menuBar)).isDisplayed()).toBe(true);
     });
 
-    test('Theme picker switches to high contrast', async () => {
+    test('Color mode picker switches to high contrast', async () => {
         await loadUri(uri);
         await clickXpath(SETTINGS_MENU_XPATH);
         await clickText('Color Mode', scope.menuBar);
@@ -113,7 +113,7 @@ describe('Menu bar settings', () => {
 
         const motionBubblePath = `//${scopeForCategoryId('motion')}//*[contains(@class, "categoryBubble")]`;
 
-        // There is a tiny delay for the color theme to be applied to the categories.
+        // There is a tiny delay for the color color mode to be applied to the categories.
         await driver.wait(async () => {
             const motionCategoryBubble = await findByXpath(motionBubblePath);
             const color = await motionCategoryBubble.getCssValue('background-color');
@@ -122,20 +122,20 @@ describe('Menu bar settings', () => {
             // returns the value. Locally I am seeing 'rgba(128, 181, 255, 1)',
             // but this is a bit flexible just in case.
             return /128,\s?181,\s?255/.test(color) || color.includes('80B5FF');
-        }, 5000, 'Motion category color does not match high contrast theme');
+        }, 5000, 'Motion category color does not match high contrast color mode');
     });
 
     test('Settings menu switches between submenus', async () => {
         await loadUri(uri);
         await clickXpath(SETTINGS_MENU_XPATH);
 
-        // Language and theme options not visible yet
+        // Language and color mode options not visible yet
         expect(await (await findByText('High Contrast', scope.menuBar)).isDisplayed()).toBe(false);
         expect(await (await findByText('Esperanto', scope.menuBar)).isDisplayed()).toBe(false);
 
         await clickText('Color Mode', scope.menuBar);
 
-        // Only theme options visible
+        // Only color mode options visible
         expect(await (await findByText('High Contrast', scope.menuBar)).isDisplayed()).toBe(true);
         expect(await (await findByText('Esperanto', scope.menuBar)).isDisplayed()).toBe(false);
 

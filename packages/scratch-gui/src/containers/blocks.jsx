@@ -19,12 +19,13 @@ import {BLOCKS_DEFAULT_SCALE, STAGE_DISPLAY_SIZES} from '../lib/layout-constants
 import DropAreaHOC from '../lib/drop-area-hoc.jsx';
 import DragConstants from '../lib/drag-constants';
 import defineDynamicBlock from '../lib/define-dynamic-block';
-import {DEFAULT_THEME, getColorsForTheme, themeMap} from '../lib/themes';
+import {DEFAULT_MODE, getColorsForMode, colorModeMap} from '../lib/settings/color-mode';
+import {CAT_BLOCKS_THEME} from '../lib/settings/theme';
 import {
     injectExtensionBlockIcons,
-    injectExtensionCategoryTheme,
+    injectExtensionCategoryMode,
     getExtensionColors
-} from '../lib/themes/blockHelpers';
+} from '../lib/settings/color-mode/blockHelpers';
 
 import {connect} from 'react-redux';
 import {updateToolbox} from '../reducers/toolbox';
@@ -56,7 +57,7 @@ const DroppableBlocks = DropAreaHOC([
 class Blocks extends React.Component {
     constructor (props) {
         super(props);
-        this.ScratchBlocks = VMScratchBlocks(props.vm, false);
+        this.ScratchBlocks = VMScratchBlocks(props.vm);
         bindAll(this, [
             'attachVM',
             'detachVM',
@@ -114,9 +115,11 @@ class Blocks extends React.Component {
                 rtl: this.props.isRtl,
                 toolbox: this.props.toolboxXML,
                 theme: new this.ScratchBlocks.Theme(
-                    this.props.theme,
-                    getColorsForTheme(this.props.theme)
-                )
+                    this.props.colorMode,
+                    getColorsForMode(this.props.colorMode)
+                ),
+                // TODO: use scratch-blocks constants instead of bare strings
+                scratchTheme: this.props.useCatBlocks ? 'catblocks' : 'classic'
             }
         );
         this.workspace = this.ScratchBlocks.inject(this.blocks, workspaceConfig);
@@ -408,15 +411,15 @@ class Blocks extends React.Component {
             const stageCostumes = stage.getCostumes();
             const targetCostumes = target.getCostumes();
             const targetSounds = target.getSounds();
-            const dynamicBlocksXML = injectExtensionCategoryTheme(
+            const dynamicBlocksXML = injectExtensionCategoryMode(
                 this.props.vm.runtime.getBlocksXML(target),
-                this.props.theme
+                this.props.colorMode
             );
             return makeToolboxXML(false, target.isStage, target.id, dynamicBlocksXML,
                 targetCostumes[targetCostumes.length - 1].name,
                 stageCostumes[stageCostumes.length - 1].name,
                 targetSounds.length > 0 ? targetSounds[targetSounds.length - 1].name : '',
-                getColorsForTheme(this.props.theme)
+                getColorsForMode(this.props.colorMode)
             );
         } catch {
             return null;
@@ -438,10 +441,7 @@ class Blocks extends React.Component {
         this.workspace.removeChangeListener(this.toolboxUpdateChangeListener);
         const dom = this.ScratchBlocks.utils.xml.textToDom(data.xml);
         try {
-            this.ScratchBlocks.clearWorkspaceAndLoadFromXml(
-                dom,
-                this.workspace
-            );
+            this.ScratchBlocks.clearWorkspaceAndLoadFromXml(dom, this.workspace);
         } catch (error) {
             // The workspace is likely incomplete. What did update should be
             // functional.
@@ -514,7 +514,7 @@ class Blocks extends React.Component {
                     if (blockInfo.info && blockInfo.info.isDynamic) {
                         dynamicBlocksInfo.push(blockInfo);
                     } else if (blockInfo.json) {
-                        staticBlocksJson.push(injectExtensionBlockIcons(blockInfo.json, this.props.theme));
+                        staticBlocksJson.push(injectExtensionBlockIcons(blockInfo.json, this.props.colorMode));
                     }
                     // otherwise it's a non-block entry such as '---'
                 });
@@ -546,8 +546,8 @@ class Blocks extends React.Component {
         let colourSecondary = categoryInfo.color2;
         let colourTertiary = categoryInfo.color3;
         let colourQuaternary = categoryInfo.color3;
-        if (this.props.theme !== DEFAULT_THEME) {
-            const colors = getExtensionColors(this.props.theme);
+        if (this.props.colorMode !== DEFAULT_MODE) {
+            const colors = getExtensionColors(this.props.colorMode);
             colourPrimary = colors.colourPrimary;
             colourSecondary = colors.colourSecondary;
             colourTertiary = colors.colourTertiary;
@@ -671,7 +671,7 @@ class Blocks extends React.Component {
             updateMetrics: updateMetricsProp,
             useCatBlocks,
             workspaceMetrics,
-            theme,
+            colorMode,
             ...props
         } = this.props;
          
@@ -701,8 +701,6 @@ class Blocks extends React.Component {
                         vm={vm}
                         onCategorySelected={this.handleCategorySelected}
                         onRequestClose={onRequestCloseExtensionLibrary}
-                        showNewFeatureCallouts={this.props.showNewFeatureCallouts}
-                        username={this.props.username}
                     />
                 ) : null}
                 {customProceduresVisible ? (
@@ -711,7 +709,7 @@ class Blocks extends React.Component {
                             media: options.media
                         }}
                         onRequestClose={this.handleCustomProceduresClose}
-                        theme={theme}
+                        colorMode={colorMode}
                     />
                 ) : null}
             </React.Fragment>
@@ -745,7 +743,7 @@ Blocks.propTypes = {
         collapse: PropTypes.bool
     }),
     stageSize: PropTypes.oneOf(Object.keys(STAGE_DISPLAY_SIZES)).isRequired,
-    theme: PropTypes.oneOf(Object.keys(themeMap)),
+    colorMode: PropTypes.oneOf(Object.keys(colorModeMap)),
     toolboxXML: PropTypes.string,
     updateMetrics: PropTypes.func,
     updateToolboxState: PropTypes.func,
@@ -753,9 +751,7 @@ Blocks.propTypes = {
     vm: PropTypes.instanceOf(VM).isRequired,
     workspaceMetrics: PropTypes.shape({
         targets: PropTypes.objectOf(PropTypes.object)
-    }),
-    showNewFeatureCallouts: PropTypes.bool,
-    username: PropTypes.string
+    })
 };
 
 Blocks.defaultOptions = {
@@ -783,7 +779,7 @@ Blocks.defaultOptions = {
 Blocks.defaultProps = {
     isVisible: true,
     options: Blocks.defaultOptions,
-    theme: DEFAULT_THEME
+    colorMode: DEFAULT_MODE
 };
 
 const mapStateToProps = state => ({
@@ -798,7 +794,7 @@ const mapStateToProps = state => ({
     toolboxXML: state.scratchGui.toolbox.toolboxXML,
     customProceduresVisible: state.scratchGui.customProcedures.active,
     workspaceMetrics: state.scratchGui.workspaceMetrics,
-    useCatBlocks: isTimeTravel2020(state)
+    useCatBlocks: isTimeTravel2020(state) || state.scratchGui.settings.theme === CAT_BLOCKS_THEME
 });
 
 const mapDispatchToProps = dispatch => ({
