@@ -1,8 +1,18 @@
-import {ScratchPaintReducer} from 'scratch-paint';
-import LocalesReducer, {localesInitialState, initLocale, selectLocale} from './reducers/locales.js';
-import GuiReducer, {buildInitialState, guiMiddleware, initEmbedded, initFullScreen, initPlayer} from './reducers/gui';
-import {setFullScreen, setPlayer, setEmbedded} from './reducers/mode.js';
-import {activateDeck} from './reducers/cards.js';
+import { ScratchPaintReducer } from "scratch-paint";
+import LocalesReducer, {
+    localesInitialState,
+    initLocale,
+    selectLocale,
+} from "./reducers/locales.js";
+import GuiReducer, {
+    buildInitialState,
+    guiMiddleware,
+    initEmbedded,
+    initFullScreen,
+    initPlayer,
+} from "./reducers/gui";
+import { setFullScreen, setPlayer, setEmbedded } from "./reducers/mode.js";
+import { activateDeck } from "./reducers/cards.js";
 import {
     LoadingStates,
     onFetchedProjectData,
@@ -12,19 +22,37 @@ import {
     remixProject,
     requestNewProject,
     requestProjectUpload,
-    setProjectId
-} from './reducers/project-state.js';
+    setProjectId,
+} from "./reducers/project-state.js";
 import {
     openLoadingProject,
     closeLoadingProject,
-    openTelemetryModal
-} from './reducers/modals.js';
-import {setStageSize} from './reducers/stage-size';
+    openTelemetryModal,
+    openTipsLibrary,
+    openBackdropLibrary,
+    openCostumeLibrary,
+    openDebugModal,
+    openExtensionLibrary,
+    openSoundLibrary,
+    openSpriteLibrary,
+    openSoundRecorder,
+    openConnectionModal,
+    closeCostumeLibrary,
+    closeDebugModal,
+    closeExtensionLibrary,
+    closeSpriteLibrary,
+    closeSoundLibrary,
+    closeSoundRecorder,
+    closeTipsLibrary,
+    closeBackdropLibrary,
+    closeConnectionModal,
+} from "./reducers/modals.js";
+import { setStageSize } from "./reducers/stage-size";
 
 export const guiReducers = {
     locales: LocalesReducer,
     scratchGui: GuiReducer,
-    scratchPaint: ScratchPaintReducer
+    scratchPaint: ScratchPaintReducer,
 };
 
 export {
@@ -38,11 +66,27 @@ export {
     requestProjectUpload,
     setProjectId,
     setStageSize,
-
     openLoadingProject,
     closeLoadingProject,
     openTelemetryModal,
-    
+    openTipsLibrary,
+    openBackdropLibrary,
+    openCostumeLibrary,
+    openDebugModal,
+    openExtensionLibrary,
+    openSoundLibrary,
+    openSpriteLibrary,
+    openSoundRecorder,
+    openConnectionModal,
+    closeCostumeLibrary,
+    closeDebugModal,
+    closeExtensionLibrary,
+    closeSpriteLibrary,
+    closeSoundLibrary,
+    closeSoundRecorder,
+    closeTipsLibrary,
+    closeBackdropLibrary,
+    closeConnectionModal,
     buildInitialState,
     guiMiddleware,
     initEmbedded,
@@ -54,5 +98,5 @@ export {
     setPlayer,
     setEmbedded,
     activateDeck,
-    selectLocale
+    selectLocale,
 };
