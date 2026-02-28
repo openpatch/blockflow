@@ -94,6 +94,7 @@ const StageHeaderComponent = function (props) {
         onSetStageFull,
         onSetStageUnFull,
         onUpdateProjectThumbnail,
+        projectFile,
         projectId,
         showBranding,
         showNewFeatureCallouts,
@@ -222,7 +223,7 @@ const StageHeaderComponent = function (props) {
                     />
                 </a>
             </div>
-        ) : (
+        ) : projectFile ? null : (
             <div className={styles.unselectWrapper}>
                 <Button
                     className={styles.stageButton}
@@ -371,6 +372,7 @@ StageHeaderComponent.propTypes = {
     onSetStageSmall: PropTypes.func.isRequired,
     onSetStageUnFull: PropTypes.func.isRequired,
     onUpdateProjectThumbnail: PropTypes.func,
+    projectFile: PropTypes.object,
     projectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     showBranding: PropTypes.bool.isRequired,
     showNewFeatureCallouts: PropTypes.bool,

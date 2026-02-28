@@ -1,48 +1,42 @@
-import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDomClient from 'react-dom/client';
 import {connect} from 'react-redux';
 import {compose} from 'redux';
+import queryString from 'query-string';
 
-import Box from '../components/box/box.jsx';
 import GUI from '../containers/gui.jsx';
 import HashParserHOC from '../lib/hash-parser-hoc.jsx';
 import AppStateHOC from '../lib/app-state-hoc.jsx';
 
-import {setPlayer} from '../reducers/mode';
+import {setFullScreen} from '../reducers/mode';
 
 if (process.env.NODE_ENV === 'production' && typeof window === 'object') {
     // Warn before navigating away
     window.onbeforeunload = () => true;
 }
 
-import styles from './player.css';
+class Player extends React.Component {
+    componentDidMount () {
+        const queryParams = queryString.parse(location.search);
+        if (queryParams.project) {
+            this.props.onSetFullScreen(true);
+        }
+    }
+    render () {
+        const {onSetFullScreen, ...props} = this.props;
+        return (
+            <GUI
+                isPlayerOnly
+                {...props}
+            />
+        );
+    }
+}
 
-const Player = ({isPlayerOnly, onSeeInside, projectId}) => (
-    <Box className={classNames(isPlayerOnly ? styles.stageOnly : styles.editor)}>
-        {isPlayerOnly && <button onClick={onSeeInside}>{'See inside'}</button>}
-        <GUI
-            canEditTitle
-            enableCommunity
-            isPlayerOnly={isPlayerOnly}
-            projectId={projectId}
-        />
-    </Box>
-);
-
-Player.propTypes = {
-    isPlayerOnly: PropTypes.bool,
-    onSeeInside: PropTypes.func,
-    projectId: PropTypes.string
-};
-
-const mapStateToProps = state => ({
-    isPlayerOnly: state.scratchGui.mode.isPlayerOnly
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = dispatch => ({
-    onSeeInside: () => dispatch(setPlayer(false))
+    onSetFullScreen: isFullScreen => dispatch(setFullScreen(isFullScreen))
 });
 
 const ConnectedPlayer = connect(

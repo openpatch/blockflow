@@ -66,6 +66,7 @@ const mapStateToProps = state => {
         isFullScreen: state.scratchGui.mode.isFullScreen,
         isPlayerOnly: state.scratchGui.mode.isPlayerOnly,
 
+        projectFile: state.scratchGui.projectFile.projectFile,
         projectId: projectState.projectId
     };
 

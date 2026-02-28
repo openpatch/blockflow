@@ -6,6 +6,12 @@ import {connect} from 'react-redux';
 import fetchProjectFile from './fetch-project-file';
 import {setProjectFile, setProjectFileLoading, setProjectFileError} from '../reducers/project-file';
 import {setExternalDeck} from '../reducers/cards';
+import {setFullScreen} from '../reducers/mode';
+import {
+    LoadingState,
+    requestProjectUpload,
+    onLoadedProject
+} from '../reducers/project-state';
 import log from './log';
 
 const EXTERNAL_DECK_ID = '__external__';
@@ -29,8 +35,18 @@ const ProjectFileHOC = function (WrappedComponent) {
         componentDidMount () {
             const queryParams = queryString.parse(location.search);
             if (queryParams.project) {
-                this.setState({projectFileUrl: queryParams.project});
-                this.loadProjectFile(queryParams.project);
+                const url = queryParams.project;
+                this.setState({projectFileUrl: url});
+                if (url.endsWith('.sb3')) {
+                    // Claim the loading state to prevent the default project from loading
+                    this.props.onRequestProjectUpload(this.props.loadingState);
+                    this.props.onSetProjectFile({sb3: url, title: ''});
+                    if (this.props.vm) {
+                        this.loadSb3(url);
+                    }
+                } else {
+                    this.loadProjectFile(url);
+                }
             }
         }
         componentDidUpdate (prevProps) {
@@ -80,6 +96,9 @@ const ProjectFileHOC = function (WrappedComponent) {
                     return response.arrayBuffer();
                 })
                 .then(buffer => this.props.vm.loadProject(buffer))
+                .then(() => {
+                    this.props.onProjectLoaded(LoadingState.LOADING_VM_FILE_UPLOAD);
+                })
                 .catch(error => {
                     log.error('Failed to load sb3:', error);
                 });
@@ -90,6 +109,10 @@ const ProjectFileHOC = function (WrappedComponent) {
                 onSetProjectFileLoading,
                 onSetProjectFileError,
                 onSetExternalDeck,
+                onSetFullScreen,
+                onRequestProjectUpload,
+                onProjectLoaded,
+                loadingState: loadingStateProp,
                 projectFile,
                 projectFileLoading,
                 ...componentProps
@@ -120,6 +143,10 @@ const ProjectFileHOC = function (WrappedComponent) {
         onSetProjectFile: PropTypes.func.isRequired,
         onSetProjectFileError: PropTypes.func.isRequired,
         onSetProjectFileLoading: PropTypes.func.isRequired,
+        onSetFullScreen: PropTypes.func.isRequired,
+        onRequestProjectUpload: PropTypes.func.isRequired,
+        onProjectLoaded: PropTypes.func.isRequired,
+        loadingState: PropTypes.string,
         projectFile: PropTypes.object,
         projectFileLoading: PropTypes.bool,
         vm: PropTypes.object
@@ -128,6 +155,7 @@ const ProjectFileHOC = function (WrappedComponent) {
     const mapStateToProps = state => ({
         projectFile: state.scratchGui.projectFile.projectFile,
         projectFileLoading: state.scratchGui.projectFile.loading,
+        loadingState: state.scratchGui.projectState.loadingState,
         vm: state.scratchGui.vm
     });
 
@@ -135,7 +163,10 @@ const ProjectFileHOC = function (WrappedComponent) {
         onSetProjectFile: pf => dispatch(setProjectFile(pf)),
         onSetProjectFileLoading: () => dispatch(setProjectFileLoading()),
         onSetProjectFileError: error => dispatch(setProjectFileError(error)),
-        onSetExternalDeck: (deckId, deck) => dispatch(setExternalDeck(deckId, deck))
+        onSetExternalDeck: (deckId, deck) => dispatch(setExternalDeck(deckId, deck)),
+        onSetFullScreen: isFullScreen => dispatch(setFullScreen(isFullScreen)),
+        onRequestProjectUpload: loadingState => dispatch(requestProjectUpload(loadingState)),
+        onProjectLoaded: loadingState => dispatch(onLoadedProject(loadingState, false, true))
     });
 
     return connect(
