@@ -64,13 +64,17 @@ const labelMap = defineMessages({
     }
 });
 
-const CardHeader = ({onCloseCards, onShrinkExpandCards, onShowAll, totalSteps, step, expanded, isExternal}) => {
+const CardHeader = ({onCloseCards, onShrinkExpandCards, onShowAll, totalSteps, step, expanded, isExternal, title}) => {
     const intl = useIntl();
     const headerClassName = expanded ? styles.headerButtons :
         classNames(styles.headerButtons, styles.headerButtonsHidden);
 
     return (<div className={headerClassName}>
-        {!isExternal && (
+        {isExternal ? (
+            <div className={styles.headerTitle}>
+                {title}
+            </div>
+        ) : (
             <button
                 className={styles.allButton}
                 onClick={onShowAll}
@@ -359,6 +363,7 @@ CardHeader.propTypes = {
     onShowAll: PropTypes.func.isRequired,
     onShrinkExpandCards: PropTypes.func.isRequired,
     step: PropTypes.number,
+    title: PropTypes.node,
     totalSteps: PropTypes.number
 };
 
@@ -561,6 +566,7 @@ const Cards = props => {
                             expanded={expanded}
                             isExternal={activeDeckId === EXTERNAL_DECK_ID}
                             step={step}
+                            title={content[activeDeckId].name}
                             totalSteps={steps.length}
                             onCloseCards={onCloseCards}
                             onShowAll={onShowAll}
