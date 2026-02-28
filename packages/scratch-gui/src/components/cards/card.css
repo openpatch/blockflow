@@ -190,6 +190,21 @@ body .card-container {
     margin: 0 0.5rem 0.5rem;
 }
 
+.step-text {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: $text-primary;
+    padding: 0 1.25rem 0.75rem;
+    text-align: left;
+    max-width: 466px;
+    word-wrap: break-word;
+}
+
+.step-image-container {
+    display: flex;
+    justify-content: center;
+}
+
 .decks, .resources {
     display: flex;
     flex-direction: row;

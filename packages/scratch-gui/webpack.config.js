@@ -208,6 +208,10 @@ const buildConfig = baseConfig.clone()
                 to: 'static'
             },
             {
+                from: 'example',
+                to: 'example'
+            },
+            {
                 from: 'extensions/**',
                 to: 'static',
                 context: 'src/examples'

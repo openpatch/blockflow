@@ -30,6 +30,7 @@ import toolboxReducer, {toolboxInitialState} from './toolbox';
 import vmReducer, {vmInitialState} from './vm';
 import vmStatusReducer, {vmStatusInitialState} from './vm-status';
 import workspaceMetricsReducer, {workspaceMetricsInitialState} from './workspace-metrics';
+import projectFileReducer, {projectFileInitialState} from './project-file';
 import throttle from 'redux-throttle';
 
 import decks from '../lib/libraries/decks/index.jsx';
@@ -59,6 +60,7 @@ const buildInitialState = (config: GUIConfig) => ({
     platform: platformInitialState,
     projectChanged: projectChangedInitialState,
     projectState: projectStateInitialState,
+    projectFile: projectFileInitialState,
     projectTitle: projectTitleInitialState,
     fontsLoaded: fontsLoadedInitialState,
     restoreDeletion: restoreDeletionInitialState,
@@ -169,6 +171,7 @@ const guiReducer = combineReducers({
     platform: platformReducer,
     projectChanged: projectChangedReducer,
     projectState: projectStateReducer,
+    projectFile: projectFileReducer,
     projectTitle: projectTitleReducer,
     fontsLoaded: fontsLoadedReducer,
     restoreDeletion: restoreDeletionReducer,
