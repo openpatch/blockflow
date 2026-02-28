@@ -117,6 +117,7 @@ const GUIComponent = props => {
         accountNavOpen,
         activeTabIndex,
         alertsVisible,
+        allowExtensions,
         authorId,
         authorThumbnailUrl,
         authorUsername,
@@ -190,6 +191,7 @@ const GUIComponent = props => {
         onTelemetryModalOptOut,
         onUpdateProjectThumbnail,
         showComingSoon,
+        showTutorials,
         soundsTabVisible,
         stageSizeMode,
         targetIsStage,
@@ -358,6 +360,7 @@ const GUIComponent = props => {
                         logo={logo}
                         renderLogin={renderLogin}
                         showComingSoon={showComingSoon}
+                        showTutorials={showTutorials}
                         onClickAbout={onClickAbout}
                         onClickAccountNav={onClickAccountNav}
                         onClickLogo={onClickLogo}
@@ -489,10 +492,12 @@ const GUIComponent = props => {
                                             colorMode={colorMode}
                                         />
                                     </Box>
-                                    <ExtensionsButton
-                                        intl={intl}
-                                        onExtensionButtonClick={onExtensionButtonClick}
-                                    />
+                                    {allowExtensions !== false && (
+                                        <ExtensionsButton
+                                            intl={intl}
+                                            onExtensionButtonClick={onExtensionButtonClick}
+                                        />
+                                    )}
                                     <Box className={styles.watermark}>
                                         <Watermark />
                                     </Box>
@@ -572,6 +577,7 @@ GUIComponent.propTypes = {
     accountNavOpen: PropTypes.bool,
     accountMenuOptions: AccountMenuOptionsPropTypes,
     activeTabIndex: PropTypes.number,
+    allowExtensions: PropTypes.bool,
     authorId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]), // can be false
     authorThumbnailUrl: PropTypes.string,
     authorUsername: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]), // can be false
@@ -643,6 +649,7 @@ GUIComponent.propTypes = {
     renderLogin: PropTypes.func,
     setTheme: PropTypes.func.isRequired,
     showComingSoon: PropTypes.bool,
+    showTutorials: PropTypes.bool,
     showNewFeatureCallouts: PropTypes.bool,
     soundsTabVisible: PropTypes.bool,
     stageSizeMode: PropTypes.oneOf(Object.keys(STAGE_SIZE_MODES)),

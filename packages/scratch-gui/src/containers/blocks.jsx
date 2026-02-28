@@ -2,6 +2,7 @@ import bindAll from 'lodash.bindall';
 import debounce from 'lodash.debounce';
 import defaultsDeep from 'lodash.defaultsdeep';
 import makeToolboxXML from '../lib/make-toolbox-xml';
+import filterToolboxXML from '../lib/filter-toolbox-xml';
 import PropTypes from 'prop-types';
 import React from 'react';
 import VMScratchBlocks from '../lib/blocks';
@@ -415,11 +416,14 @@ class Blocks extends React.Component {
                 this.props.vm.runtime.getBlocksXML(target),
                 this.props.colorMode
             );
-            return makeToolboxXML(false, target.isStage, target.id, dynamicBlocksXML,
-                targetCostumes[targetCostumes.length - 1].name,
-                stageCostumes[stageCostumes.length - 1].name,
-                targetSounds.length > 0 ? targetSounds[targetSounds.length - 1].name : '',
-                getColorsForMode(this.props.colorMode)
+            return filterToolboxXML(
+                makeToolboxXML(false, target.isStage, target.id, dynamicBlocksXML,
+                    targetCostumes[targetCostumes.length - 1].name,
+                    stageCostumes[stageCostumes.length - 1].name,
+                    targetSounds.length > 0 ? targetSounds[targetSounds.length - 1].name : '',
+                    getColorsForMode(this.props.colorMode)
+                ),
+                this.props.toolboxConfig
             );
         } catch {
             return null;
@@ -668,6 +672,7 @@ class Blocks extends React.Component {
             onRequestCloseExtensionLibrary,
             onRequestCloseCustomProcedures,
             toolboxXML,
+            toolboxConfig,
             updateMetrics: updateMetricsProp,
             useCatBlocks,
             workspaceMetrics,
@@ -745,6 +750,7 @@ Blocks.propTypes = {
     stageSize: PropTypes.oneOf(Object.keys(STAGE_DISPLAY_SIZES)).isRequired,
     colorMode: PropTypes.oneOf(Object.keys(colorModeMap)),
     toolboxXML: PropTypes.string,
+    toolboxConfig: PropTypes.object,
     updateMetrics: PropTypes.func,
     updateToolboxState: PropTypes.func,
     useCatBlocks: PropTypes.bool,
@@ -792,6 +798,8 @@ const mapStateToProps = state => ({
     locale: state.locales.locale,
     messages: state.locales.messages,
     toolboxXML: state.scratchGui.toolbox.toolboxXML,
+    toolboxConfig: state.scratchGui.projectFile.projectFile ?
+        state.scratchGui.projectFile.projectFile.toolbox : null,
     customProceduresVisible: state.scratchGui.customProcedures.active,
     workspaceMetrics: state.scratchGui.workspaceMetrics,
     useCatBlocks: isTimeTravel2020(state) || state.scratchGui.settings.theme === CAT_BLOCKS_THEME
