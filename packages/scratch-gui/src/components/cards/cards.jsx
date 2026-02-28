@@ -19,9 +19,13 @@ import {translateVideo} from '../../lib/libraries/decks/translate-video.js';
 import {translateImage} from '../../lib/libraries/decks/translate-image.js';
 import {EXTERNAL_DECK_ID} from '../../lib/project-file-hoc.jsx';
 
-const CardHeader = ({onCloseCards, onShrinkExpandCards, onShowAll, totalSteps, step, expanded, isExternal}) => (
+const CardHeader = ({onCloseCards, onShrinkExpandCards, onShowAll, totalSteps, step, expanded, isExternal, title}) => (
     <div className={expanded ? styles.headerButtons : classNames(styles.headerButtons, styles.headerButtonsHidden)}>
-        {!isExternal && (
+        {isExternal ? (
+            <div className={styles.headerTitle}>
+                {title}
+            </div>
+        ) : (
             <div
                 className={styles.allButton}
                 onClick={onShowAll}
@@ -278,6 +282,7 @@ CardHeader.propTypes = {
     onShowAll: PropTypes.func.isRequired,
     onShrinkExpandCards: PropTypes.func.isRequired,
     step: PropTypes.number,
+    title: PropTypes.node,
     totalSteps: PropTypes.number
 };
 
@@ -464,6 +469,7 @@ const Cards = props => {
                             expanded={expanded}
                             isExternal={activeDeckId === EXTERNAL_DECK_ID}
                             step={step}
+                            title={content[activeDeckId].name}
                             totalSteps={steps.length}
                             onCloseCards={onCloseCards}
                             onShowAll={onShowAll}
