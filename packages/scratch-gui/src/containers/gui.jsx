@@ -38,6 +38,7 @@ import ProjectFetcherHOC from '../lib/project-fetcher-hoc.jsx';
 import TitledHOC from '../lib/titled-hoc.jsx';
 import ProjectSaverHOC from '../lib/project-saver-hoc.jsx';
 import QueryParserHOC from '../lib/query-parser-hoc.jsx';
+import ProjectFileHOC from '../lib/project-file-hoc.jsx';
 import vmListenerHOC from '../lib/vm-listener-hoc.jsx';
 import vmManagerHOC from '../lib/vm-manager-hoc.jsx';
 import cloudManagerHOC from '../lib/cloud-manager-hoc.jsx';
@@ -257,6 +258,7 @@ const WrappedGui = compose(
     ErrorBoundaryHOC('Top Level App'),
     FontLoaderHOC,
     QueryParserHOC,
+    ProjectFileHOC,
     ProjectFetcherHOC,
     TitledHOC,
     ProjectSaverHOC,

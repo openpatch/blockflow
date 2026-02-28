@@ -11,6 +11,7 @@ const PREV_STEP = 'scratch-gui/cards/PREV_STEP';
 const DRAG_CARD = 'scratch-gui/cards/DRAG_CARD';
 const START_DRAG = 'scratch-gui/cards/START_DRAG';
 const END_DRAG = 'scratch-gui/cards/END_DRAG';
+const SET_EXTERNAL_DECK = 'scratch-gui/cards/SET_EXTERNAL_DECK';
 
 const initialState = {
     visible: false,
@@ -81,6 +82,18 @@ const reducer = function (state, action) {
         return Object.assign({}, state, {
             dragging: false
         });
+    case SET_EXTERNAL_DECK:
+        return Object.assign({}, state, {
+            content: Object.assign({}, state.content, {
+                [action.deckId]: action.deck
+            }),
+            activeDeckId: action.deckId,
+            step: 0,
+            x: 0,
+            y: 0,
+            expanded: true,
+            visible: true
+        });
     default:
         return state;
     }
@@ -125,6 +138,14 @@ const endDrag = function () {
     return {type: END_DRAG};
 };
 
+const setExternalDeck = function (deckId, deck) {
+    return {
+        type: SET_EXTERNAL_DECK,
+        deckId,
+        deck
+    };
+};
+
 export {
     reducer as default,
     initialState as cardsInitialState,
@@ -136,5 +157,6 @@ export {
     prevStep,
     dragCard,
     startDrag,
-    endDrag
+    endDrag,
+    setExternalDeck
 };

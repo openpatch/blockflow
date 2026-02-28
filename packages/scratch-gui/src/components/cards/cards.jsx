@@ -17,6 +17,7 @@ import closeIcon from './icon--close.svg';
 
 import {translateVideo} from '../../lib/libraries/decks/translate-video.js';
 import {translateImage} from '../../lib/libraries/decks/translate-image.js';
+import {EXTERNAL_DECK_ID} from '../../lib/project-file-hoc.jsx';
 
 import {KEY} from '../../lib/navigation-keys.js';
 
@@ -63,27 +64,29 @@ const labelMap = defineMessages({
     }
 });
 
-const CardHeader = ({onCloseCards, onShrinkExpandCards, onShowAll, totalSteps, step, expanded}) => {
+const CardHeader = ({onCloseCards, onShrinkExpandCards, onShowAll, totalSteps, step, expanded, isExternal}) => {
     const intl = useIntl();
     const headerClassName = expanded ? styles.headerButtons :
         classNames(styles.headerButtons, styles.headerButtonsHidden);
 
     return (<div className={headerClassName}>
-        <button
-            className={styles.allButton}
-            onClick={onShowAll}
-        >
-            <img
-                className={styles.helpIcon}
-                src={helpIcon}
-                alt={intl.formatMessage(labelMap.tutorialsIcon)}
-            />
-            <FormattedMessage
-                defaultMessage="Tutorials"
-                description="Title for button to return to tutorials library"
-                id="gui.cards.all-tutorials"
-            />
-        </button>
+        {!isExternal && (
+            <button
+                className={styles.allButton}
+                onClick={onShowAll}
+            >
+                <img
+                    className={styles.helpIcon}
+                    src={helpIcon}
+                    alt={intl.formatMessage(labelMap.tutorialsIcon)}
+                />
+                <FormattedMessage
+                    defaultMessage="Tutorials"
+                    description="Title for button to return to tutorials library"
+                    id="gui.cards.all-tutorials"
+                />
+            </button>
+        )}
         {totalSteps > 1 ? (
             <div className={styles.stepsList}>
                 {Array(totalSteps).fill(0)
@@ -118,21 +121,23 @@ const CardHeader = ({onCloseCards, onShrinkExpandCards, onShowAll, totalSteps, s
                     />
                 }
             </button>
-            <button
-                className={styles.removeButton}
-                onClick={onCloseCards}
-            >
-                <img
-                    className={styles.closeIcon}
-                    src={closeIcon}
-                    alt={intl.formatMessage(labelMap.closeIcon)}
-                />
-                <FormattedMessage
-                    defaultMessage="Close"
-                    description="Title for button to close how-to card"
-                    id="gui.cards.close"
-                />
-            </button>
+            {!isExternal && (
+                <button
+                    className={styles.removeButton}
+                    onClick={onCloseCards}
+                >
+                    <img
+                        className={styles.closeIcon}
+                        src={closeIcon}
+                        alt={intl.formatMessage(labelMap.closeIcon)}
+                    />
+                    <FormattedMessage
+                        defaultMessage="Close"
+                        description="Title for button to close how-to card"
+                        id="gui.cards.close"
+                    />
+                </button>
+            )}
         </div>
     </div>);
 };
@@ -239,6 +244,64 @@ ImageStep.propTypes = {
     title: PropTypes.node.isRequired
 };
 
+// Renders markdown-like text: **bold** and *italic*
+const renderSimpleMarkdown = text => {
+    const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+    return parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={i}>{part.slice(2, -2)}</strong>;
+        }
+        if (part.startsWith('*') && part.endsWith('*')) {
+            return <em key={i}>{part.slice(1, -1)}</em>;
+        }
+        return part;
+    });
+};
+
+const TextStep = ({title, text, image}) => (<Fragment>
+    <div className={styles.stepTitle}>
+        {title}
+    </div>
+    <div className={styles.stepText}>
+        {renderSimpleMarkdown(text)}
+    </div>
+    {image ? (
+        <div className={styles.stepImageContainer}>
+            <img
+                className={styles.stepImage}
+                draggable={false}
+                src={image}
+            />
+        </div>
+    ) : null}
+</Fragment>
+);
+
+TextStep.propTypes = {
+    image: PropTypes.string,
+    text: PropTypes.string.isRequired,
+    title: PropTypes.node.isRequired
+};
+
+const VideoUrlStep = ({title, video}) => (<Fragment>
+    <div className={styles.stepTitle}>
+        {title}
+    </div>
+    <div className={styles.stepVideo}>
+        <video
+            controls
+            style={{width: '466px', maxHeight: '257px'}}
+            src={video}
+        />
+    </div>
+</Fragment>
+);
+
+VideoUrlStep.propTypes = {
+    title: PropTypes.node.isRequired,
+    video: PropTypes.string.isRequired
+};
+
 const NextPrevButtons = ({isRtl, onNextStep, onPrevStep, expanded}) => {
     const intl = useIntl();
 
@@ -291,6 +354,7 @@ NextPrevButtons.propTypes = {
 };
 CardHeader.propTypes = {
     expanded: PropTypes.bool.isRequired,
+    isExternal: PropTypes.bool,
     onCloseCards: PropTypes.func.isRequired,
     onShowAll: PropTypes.func.isRequired,
     onShrinkExpandCards: PropTypes.func.isRequired,
@@ -495,6 +559,7 @@ const Cards = props => {
                     <div className={styles.card}>
                         <CardHeader
                             expanded={expanded}
+                            isExternal={activeDeckId === EXTERNAL_DECK_ID}
                             step={step}
                             totalSteps={steps.length}
                             onCloseCards={onCloseCards}
@@ -516,26 +581,40 @@ const Cards = props => {
                                         onShowAll={onShowAll}
                                     />
                                 ) :
-                                    steps[step].video ? (
-                                        showVideos ?
-                                            (
-                                                <VideoStep
-                                                    dragging={dragging}
-                                                    expanded={expanded}
-                                                    video={translateVideo(steps[step].video, locale)}
-                                                />
-                                            ) : (
-                                                <ImageStep
-                                                    image={content[activeDeckId].img}
-                                                    title={content[activeDeckId].name}
-                                                />
-                                            )
-                                    ) : (
-                                        <ImageStep
-                                            image={translateImage(steps[step].image, locale)}
+                                    steps[step].text ? (
+                                        <TextStep
+                                            image={steps[step].image}
+                                            text={steps[step].text}
                                             title={steps[step].title}
                                         />
-                                    )
+                                    ) :
+                                        steps[step].video ? (
+                                            // External video URLs (http) use VideoUrlStep; Wistia IDs use VideoStep
+                                            /^https?:\/\//.test(steps[step].video) ? (
+                                                <VideoUrlStep
+                                                    title={steps[step].title || content[activeDeckId].name}
+                                                    video={steps[step].video}
+                                                />
+                                            ) :
+                                                showVideos ?
+                                                    (
+                                                        <VideoStep
+                                                            dragging={dragging}
+                                                            expanded={expanded}
+                                                            video={translateVideo(steps[step].video, locale)}
+                                                        />
+                                                    ) : (
+                                                        <ImageStep
+                                                            image={content[activeDeckId].img}
+                                                            title={content[activeDeckId].name}
+                                                        />
+                                                    )
+                                        ) : (
+                                            <ImageStep
+                                                image={translateImage(steps[step].image, locale)}
+                                                title={steps[step].title}
+                                            />
+                                        )
                             )}
                             {steps[step].trackingPixel && steps[step].trackingPixel}
                         </div>
@@ -589,5 +668,7 @@ export {
     Cards as default,
     // Others exported for testability
     ImageStep,
-    VideoStep
+    TextStep,
+    VideoStep,
+    VideoUrlStep
 };
