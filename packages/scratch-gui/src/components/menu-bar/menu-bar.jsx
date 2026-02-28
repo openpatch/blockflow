@@ -94,6 +94,7 @@ import ninetiesLogo from './nineties_logo.svg';
 import catLogo from './cat_logo.svg';
 import prehistoricLogo from './prehistoric-logo.svg';
 import oldtimeyLogo from './oldtimey-logo.svg';
+import blockflowLogo from './blockflow-logo.svg';
 
 import sharedMessages from '../../lib/shared-messages';
 
@@ -112,7 +113,7 @@ const ariaMessages = defineMessages({
     }
 });
 
-const getScratchLogo = platform => (platform === PLATFORM.ANDROID ? scratchLogoAndroid : scratchLogo);
+const getScratchLogo = platform => (platform === PLATFORM.ANDROID ? scratchLogoAndroid : blockflowLogo);
 
 const MenuBarItemTooltip = ({
     children,
@@ -1001,7 +1002,7 @@ MenuBar.propTypes = {
 };
 
 MenuBar.defaultProps = {
-    logo: scratchLogo,
+    logo: blockflowLogo,
     onShare: () => {}
 };
 

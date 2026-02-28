@@ -1,0 +1,30 @@
+{
+  "title": "Basic Tutorial with a long title that should be truncated",
+  "sb3": "./Scratch-Projekt.sb3",
+  "ui": {
+    "allowExtensions": false
+  },
+
+  "toolbox": {
+    "categories": ["motion", "events", "control", "operators"],
+    "blocks": {
+      "motion": ["motion_movesteps", "motion_turnright", "motion_turnleft", "motion_pointindirection"]
+    }
+  },
+    "steps": [
+        {
+            "title": "Willkommen",
+            "text": "Hu huh"
+        },
+
+        {
+            "title": "Step 2",
+            "text": "Hu huh"
+        },
+
+        {
+            "title": "Step 3",
+            "text": "Hu huh"
+        }
+    ]
+}
