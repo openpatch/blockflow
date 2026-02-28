@@ -313,6 +313,7 @@ body .card-container {
 
 .steps-list {
     display: flex;
+    flex: 1;
     flex-direction: row;
     justify-content: center;
     align-items: center;
