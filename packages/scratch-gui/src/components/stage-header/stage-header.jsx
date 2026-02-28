@@ -66,6 +66,7 @@ const StageHeaderComponent = function (props) {
         onSetStageFull,
         onSetStageUnFull,
         onUpdateProjectThumbnail,
+        projectFile,
         projectId,
         showBranding,
         stageSizeMode,
@@ -106,7 +107,7 @@ const StageHeaderComponent = function (props) {
                     />
                 </a>
             </div>
-        ) : (
+        ) : projectFile ? null : (
             <div className={styles.unselectWrapper}>
                 <Button
                     className={styles.stageButton}
@@ -199,6 +200,7 @@ const StageHeaderComponent = function (props) {
 };
 
 const mapStateToProps = state => ({
+    projectFile: state.scratchGui.projectFile.projectFile,
     projectId: state.scratchGui.projectState.projectId,
     // This is the button's mode, as opposed to the actual current state
     stageSizeMode: state.scratchGui.stageSize.stageSize
@@ -214,6 +216,7 @@ StageHeaderComponent.propTypes = {
     onSetStageSmall: PropTypes.func.isRequired,
     onSetStageUnFull: PropTypes.func.isRequired,
     onUpdateProjectThumbnail: PropTypes.func,
+    projectFile: PropTypes.object,
     projectId: PropTypes.number.isRequired,
     showBranding: PropTypes.bool.isRequired,
     stageSizeMode: PropTypes.oneOf(Object.keys(STAGE_SIZE_MODES)),
