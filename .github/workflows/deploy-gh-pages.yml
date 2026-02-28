@@ -20,8 +20,8 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
@@ -29,7 +29,7 @@ jobs:
       - name: Build scratch-gui
         run: npm run build
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        uses: actions/upload-pages-artifact@v3
         with:
           path: packages/scratch-gui/build
 
@@ -43,4 +43,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac2b3c603fc # v4
+        uses: actions/deploy-pages@v4
