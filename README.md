@@ -29,7 +29,11 @@ A project file is a JSON object that configures the Blockflow editor. It is pass
   "ui": {
     "allowExtensions": false,
     "showCostumesTab": false,
-    "showSoundsTab": false
+    "showSoundsTab": false,
+    "showBuiltinCostumes": false,
+    "showBuiltinSounds": false,
+    "showBuiltinBackdrops": false,
+    "showBuiltinSprites": false
   },
   "toolbox": {
     "categories": ["motion", "looks", "events", "control"],
@@ -46,7 +50,28 @@ A project file is a JSON object that configures the Blockflow editor. It is pass
     {
       "title": "Step 2",
       "text": "Drag a move another block into the workspace.",
-      "image": "https://example.com/step2.png",
+      "image": "https://example.com/step2.png"
+    }
+  ],
+  "costumes": [
+    { "name": "Cat", "url": "https://example.com/cat.svg" },
+    { "name": "Photo", "url": "https://example.com/photo.png", "centerX": 100, "centerY": 80 }
+  ],
+  "sounds": [
+    { "name": "Meow", "url": "https://example.com/meow.mp3" }
+  ],
+  "backdrops": [
+    { "name": "Beach", "url": "https://example.com/beach.png" }
+  ],
+  "sprites": [
+    {
+      "name": "Dog",
+      "costumes": [
+        { "name": "dog-a", "url": "https://example.com/dog-a.svg" }
+      ],
+      "sounds": [
+        { "name": "bark", "url": "https://example.com/bark.mp3" }
+      ]
     }
   ]
 }
@@ -59,11 +84,19 @@ A project file is a JSON object that configures the Blockflow editor. It is pass
 | `ui.allowExtensions` | Show or hide the extensions button. |
 | `ui.showCostumesTab` | Show or hide the Costumes/Backdrops tab. |
 | `ui.showSoundsTab` | Show or hide the Sounds tab. |
+| `ui.showBuiltinCostumes` | Show or hide built-in costumes in the costume library (default: `true`). |
+| `ui.showBuiltinSounds` | Show or hide built-in sounds in the sound library (default: `true`). |
+| `ui.showBuiltinBackdrops` | Show or hide built-in backdrops in the backdrop library (default: `true`). |
+| `ui.showBuiltinSprites` | Show or hide built-in sprites in the sprite library (default: `true`). |
 | `toolbox.categories` | Array of enabled block categories (`motion`, `looks`, `sound`, `events`, `control`, `sensing`, `operators`, `variables`, `myBlocks`). |
 | `toolbox.blocks` | Object mapping category names to arrays of allowed block opcodes for fine-grained filtering. |
 | `steps` | Array of tutorial steps, each with `title`, `text`, `image`, and/or `video`. |
+| `costumes` | Array of custom costumes, each with `name`, `url`, and optional `centerX`/`centerY` (default: center of image). Appear in the costume library. |
+| `sounds` | Array of custom sounds, each with `name` and `url`. Appear in the sound library. |
+| `backdrops` | Array of custom backdrops, each with `name`, `url`, and optional `centerX`/`centerY` (default: center of image). Appear in the backdrop library. |
+| `sprites` | Array of custom sprites, each with `name`, `costumes` (array), and `sounds` (array). Appear in the sprite library. |
 
-Relative URLs in `sb3`, `image`, and `video` fields are resolved relative to the project file URL.
+Relative URLs in `sb3`, `image`, `video`, and asset `url` fields are resolved relative to the project file URL.
 
 ## Generator
 

@@ -41,13 +41,16 @@ class CostumeLibrary extends React.PureComponent {
         this.props.vm.addCostumeFromLibrary(item.md5ext, vmCostume);
     }
     mergeDynamicAssets () {
-        if (this.processedCostumes.source === this.props.dynamicCostumes) {
+        if (this.processedCostumes.source === this.props.dynamicCostumes &&
+            this.processedCostumes.showBuiltin === this.props.showBuiltinCostumes) {
             return this.processedCostumes.data;
         }
+        const staticAssets = this.props.showBuiltinCostumes === false ? [] : costumeLibraryContent;
         this.processedCostumes = mergeDynamicAssets(
-            costumeLibraryContent,
+            staticAssets,
             this.props.dynamicCostumes
         );
+        this.processedCostumes.showBuiltin = this.props.showBuiltinCostumes;
         return this.processedCostumes.data;
     }
     render () {
@@ -65,14 +68,20 @@ class CostumeLibrary extends React.PureComponent {
     }
 };
 
-const mapStateToProps = state => ({
-    dynamicCostumes: state.scratchGui.dynamicAssets.costumes
-});
+const mapStateToProps = state => {
+    const projectFile = state.scratchGui.projectFile.projectFile;
+    return {
+        dynamicCostumes: state.scratchGui.dynamicAssets.costumes,
+        showBuiltinCostumes: projectFile && projectFile.ui ?
+            projectFile.ui.showBuiltinCostumes : undefined
+    };
+};
 
 CostumeLibrary.propTypes = {
     dynamicCostumes: PropTypes.arrayOf(costumeShape),
     intl: intlShape.isRequired,
     onRequestClose: PropTypes.func,
+    showBuiltinCostumes: PropTypes.bool,
     vm: PropTypes.instanceOf(VM).isRequired
 };
 

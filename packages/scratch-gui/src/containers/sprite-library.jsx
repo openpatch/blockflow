@@ -39,13 +39,16 @@ class SpriteLibrary extends React.PureComponent {
         });
     }
     mergeDynamicAssets () {
-        if (this.processedSprites.source === this.props.dynamicSprites) {
+        if (this.processedSprites.source === this.props.dynamicSprites &&
+            this.processedSprites.showBuiltin === this.props.showBuiltinSprites) {
             return this.processedSprites.data;
         }
+        const staticAssets = this.props.showBuiltinSprites === false ? [] : spriteLibraryContent;
         this.processedSprites = mergeDynamicAssets(
-            spriteLibraryContent,
+            staticAssets,
             this.props.dynamicSprites
         );
+        this.processedSprites.showBuiltin = this.props.showBuiltinSprites;
         return this.processedSprites.data;
     }
     render () {
@@ -63,15 +66,21 @@ class SpriteLibrary extends React.PureComponent {
     }
 }
 
-const mapStateToProps = state => ({
-    dynamicSprites: state.scratchGui.dynamicAssets.sprites
-});
+const mapStateToProps = state => {
+    const projectFile = state.scratchGui.projectFile.projectFile;
+    return {
+        dynamicSprites: state.scratchGui.dynamicAssets.sprites,
+        showBuiltinSprites: projectFile && projectFile.ui ?
+            projectFile.ui.showBuiltinSprites : undefined
+    };
+};
 
 SpriteLibrary.propTypes = {
     dynamicSprites: PropTypes.arrayOf(spriteShape),
     intl: intlShape.isRequired,
     onActivateBlocksTab: PropTypes.func.isRequired,
     onRequestClose: PropTypes.func,
+    showBuiltinSprites: PropTypes.bool,
     vm: PropTypes.instanceOf(VM).isRequired
 };
 

@@ -155,13 +155,16 @@ class SoundLibrary extends React.PureComponent {
         });
     }
     mergeDynamicAssets () {
-        if (this.processedSounds.source === this.props.dynamicSounds) {
+        if (this.processedSounds.source === this.props.dynamicSounds &&
+            this.processedSounds.showBuiltin === this.props.showBuiltinSounds) {
             return this.processedSounds.data;
         }
+        const staticAssets = this.props.showBuiltinSounds === false ? [] : soundLibraryContent;
         this.processedSounds = mergeDynamicAssets(
-            soundLibraryContent,
+            staticAssets,
             this.props.dynamicSounds
         );
+        this.processedSounds.showBuiltin = this.props.showBuiltinSounds;
         return this.processedSounds.data;
     }
     render () {
@@ -203,13 +206,19 @@ SoundLibrary.propTypes = {
     isRtl: PropTypes.bool,
     onNewSound: PropTypes.func.isRequired,
     onRequestClose: PropTypes.func,
+    showBuiltinSounds: PropTypes.bool,
     vm: PropTypes.instanceOf(VM).isRequired
 };
 
-const mapStateToProps = state => ({
-    dynamicSounds: state.scratchGui.dynamicAssets.sounds,
-    isRtl: state.locales.isRtl
-});
+const mapStateToProps = state => {
+    const projectFile = state.scratchGui.projectFile.projectFile;
+    return {
+        dynamicSounds: state.scratchGui.dynamicAssets.sounds,
+        isRtl: state.locales.isRtl,
+        showBuiltinSounds: projectFile && projectFile.ui ?
+            projectFile.ui.showBuiltinSounds : undefined
+    };
+};
 
 const mapDispatchToProps = () => ({});
 
