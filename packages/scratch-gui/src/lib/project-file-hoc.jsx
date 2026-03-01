@@ -34,7 +34,36 @@ const ProjectFileHOC = function (WrappedComponent) {
         }
         componentDidMount () {
             const queryParams = queryString.parse(location.search);
-            if (queryParams.project) {
+            if (queryParams.projectJson) {
+                // Decode base64-encoded project JSON from URL
+                try {
+                    const json = decodeURIComponent(atob(queryParams.projectJson));
+                    const projectFile = JSON.parse(json);
+                    if (!projectFile.title || typeof projectFile.title !== 'string') {
+                        throw new Error('Project file must have a "title" string field');
+                    }
+                    this.props.onSetProjectFile(projectFile);
+                    if (projectFile.sb3 && this.props.vm) {
+                        this.loadSb3(projectFile.sb3);
+                    }
+                    if (projectFile.steps && projectFile.steps.length > 0) {
+                        const deck = {
+                            name: projectFile.title,
+                            img: projectFile.steps[0].image || '',
+                            steps: projectFile.steps.map(step => ({
+                                title: step.title,
+                                text: step.text || null,
+                                image: step.image || null,
+                                video: step.video || null
+                            }))
+                        };
+                        this.props.onSetExternalDeck(EXTERNAL_DECK_ID, deck);
+                    }
+                } catch (error) {
+                    log.error('Failed to parse projectJson from URL:', error);
+                    this.props.onSetProjectFileError(error.message);
+                }
+            } else if (queryParams.project) {
                 const url = queryParams.project;
                 this.setState({projectFileUrl: url});
                 if (url.endsWith('.sb3')) {
@@ -128,6 +157,14 @@ const ProjectFileHOC = function (WrappedComponent) {
                 // Hide extension button if ui.allowExtensions is false
                 if (projectFile.ui && projectFile.ui.allowExtensions === false) {
                     componentProps.allowExtensions = false;
+                }
+
+                // Hide costumes/sounds tabs if configured
+                if (projectFile.ui && projectFile.ui.showCostumesTab === false) {
+                    componentProps.showCostumesTab = false;
+                }
+                if (projectFile.ui && projectFile.ui.showSoundsTab === false) {
+                    componentProps.showSoundsTab = false;
                 }
             }
 

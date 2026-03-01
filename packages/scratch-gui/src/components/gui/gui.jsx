@@ -189,6 +189,8 @@ const GUIComponent = props => {
         onTelemetryModalOptOut,
         onUpdateProjectThumbnail,
         showComingSoon,
+        showCostumesTab,
+        showSoundsTab,
         showTutorials,
         soundsTabVisible,
         stageSizeMode,
@@ -423,46 +425,50 @@ const GUIComponent = props => {
                                                 id="gui.gui.codeTab"
                                             />
                                         </Tab>
-                                        <Tab
-                                            className={tabClassNames.tab}
-                                            onClick={onActivateCostumesTab}
-                                            role="tab"
-                                            tabIndex="0"
-                                        >
-                                            <img
-                                                draggable={false}
-                                                src={costumesIcon}
-                                            />
-                                            {targetIsStage ? (
-                                                <FormattedMessage
-                                                    defaultMessage="Backdrops"
-                                                    description="Button to get to the backdrops panel"
-                                                    id="gui.gui.backdropsTab"
+                                        {showCostumesTab !== false && (
+                                            <Tab
+                                                className={tabClassNames.tab}
+                                                onClick={onActivateCostumesTab}
+                                                role="tab"
+                                                tabIndex="0"
+                                            >
+                                                <img
+                                                    draggable={false}
+                                                    src={costumesIcon}
                                                 />
-                                            ) : (
-                                                <FormattedMessage
-                                                    defaultMessage="Costumes"
-                                                    description="Button to get to the costumes panel"
-                                                    id="gui.gui.costumesTab"
+                                                {targetIsStage ? (
+                                                    <FormattedMessage
+                                                        defaultMessage="Backdrops"
+                                                        description="Button to get to the backdrops panel"
+                                                        id="gui.gui.backdropsTab"
+                                                    />
+                                                ) : (
+                                                    <FormattedMessage
+                                                        defaultMessage="Costumes"
+                                                        description="Button to get to the costumes panel"
+                                                        id="gui.gui.costumesTab"
+                                                    />
+                                                )}
+                                            </Tab>
+                                        )}
+                                        {showSoundsTab !== false && (
+                                            <Tab
+                                                className={tabClassNames.tab}
+                                                onClick={onActivateSoundsTab}
+                                                role="tab"
+                                                tabIndex="0"
+                                            >
+                                                <img
+                                                    draggable={false}
+                                                    src={soundsIcon}
                                                 />
-                                            )}
-                                        </Tab>
-                                        <Tab
-                                            className={tabClassNames.tab}
-                                            onClick={onActivateSoundsTab}
-                                            role="tab"
-                                            tabIndex="0"
-                                        >
-                                            <img
-                                                draggable={false}
-                                                src={soundsIcon}
-                                            />
-                                            <FormattedMessage
-                                                defaultMessage="Sounds"
-                                                description="Button to get to the sounds panel"
-                                                id="gui.gui.soundsTab"
-                                            />
-                                        </Tab>
+                                                <FormattedMessage
+                                                    defaultMessage="Sounds"
+                                                    description="Button to get to the sounds panel"
+                                                    id="gui.gui.soundsTab"
+                                                />
+                                            </Tab>
+                                        )}
                                     </TabList>
                                 </Box>
                                 <TabPanel
@@ -499,30 +505,34 @@ const GUIComponent = props => {
                                         <Watermark />
                                     </Box>
                                 </TabPanel>
-                                <TabPanel
-                                    className={tabClassNames.tabPanel}
-                                    role="tabpanel"
-                                >
-                                    {costumesTabVisible ? <CostumeTab
-                                        ariaLabel={targetIsStage ? intl.formatMessage(ariaMessages.backdropsPanel) :
-                                            intl.formatMessage(ariaMessages.costumesPanel)}
-                                        ariaRole="region"
-                                        vm={vm}
-                                        onNewLibraryBackdropClick={onNewLibraryBackdropClick}
-                                        onNewLibraryCostumeClick={onNewLibraryCostumeClick}
-                                    /> : null}
-                                </TabPanel>
-                                <TabPanel
-                                    className={tabClassNames.tabPanel}
-                                    role="tabpanel"
-                                >
-                                    {soundsTabVisible ?
-                                        <SoundTab
-                                            ariaLabel={intl.formatMessage(ariaMessages.soundsPanel)}
+                                {showCostumesTab !== false && (
+                                    <TabPanel
+                                        className={tabClassNames.tabPanel}
+                                        role="tabpanel"
+                                    >
+                                        {costumesTabVisible ? <CostumeTab
+                                            ariaLabel={targetIsStage ? intl.formatMessage(ariaMessages.backdropsPanel) :
+                                                intl.formatMessage(ariaMessages.costumesPanel)}
                                             ariaRole="region"
                                             vm={vm}
+                                            onNewLibraryBackdropClick={onNewLibraryBackdropClick}
+                                            onNewLibraryCostumeClick={onNewLibraryCostumeClick}
                                         /> : null}
-                                </TabPanel>
+                                    </TabPanel>
+                                )}
+                                {showSoundsTab !== false && (
+                                    <TabPanel
+                                        className={tabClassNames.tabPanel}
+                                        role="tabpanel"
+                                    >
+                                        {soundsTabVisible ?
+                                            <SoundTab
+                                                ariaLabel={intl.formatMessage(ariaMessages.soundsPanel)}
+                                                ariaRole="region"
+                                                vm={vm}
+                                            /> : null}
+                                    </TabPanel>
+                                )}
                             </Tabs>
                         </Box>
 
@@ -638,6 +648,8 @@ GUIComponent.propTypes = {
     renderLogin: PropTypes.func,
     setTheme: PropTypes.func.isRequired,
     showComingSoon: PropTypes.bool,
+    showCostumesTab: PropTypes.bool,
+    showSoundsTab: PropTypes.bool,
     showTutorials: PropTypes.bool,
     showNewFeatureCallouts: PropTypes.bool,
     soundsTabVisible: PropTypes.bool,
