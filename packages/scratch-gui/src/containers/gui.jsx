@@ -108,13 +108,14 @@ class GUI extends React.Component {
             fetchingProject,
             isLoading,
             loadingStateVisible,
+            projectFileLoading,
             ...componentProps
         } = this.props;
 
 
         return (
             <GUIComponent
-                loading={fetchingProject || isLoading || loadingStateVisible}
+                loading={fetchingProject || isLoading || loadingStateVisible || projectFileLoading}
                 {...componentProps}
             >
                 {children}
@@ -151,6 +152,7 @@ GUI.propTypes = {
     onUpdateDynamicAssets: PropTypes.func,
     onVmInit: PropTypes.func,
     platform: PropTypes.oneOf(Object.keys(PLATFORM)),
+    projectFileLoading: PropTypes.bool,
     setPlatform: PropTypes.func.isRequired,
     /**
      * Indicates whether we should highlight new editor features in the UI.

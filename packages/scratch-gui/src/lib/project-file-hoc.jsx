@@ -17,64 +17,66 @@ import log from './log';
 const EXTERNAL_DECK_ID = '__external__';
 
 /**
- * Higher Order Component to load external project files via ?project=<url>.
+ * Higher Order Component to load external project files via ?project=<value>.
+ * The value can be:
+ * - A base64-encoded JSON project file
+ * - A URL to a .sb3 file
+ * - A URL to a JSON project file
+ *
  * When a project file is loaded, it:
  * - Fetches and parses the JSON
  * - Loads the .sb3 into the VM if specified
  * - Sets up external tutorial cards if steps are specified
  * - Injects UI-hiding props (showComingSoon=false, showTutorials=false)
  */
+const isUrl = value => /^https?:\/\//.test(value) || value.startsWith('/') || value.startsWith('./');
+
 const ProjectFileHOC = function (WrappedComponent) {
     class ProjectFileComponent extends React.Component {
         constructor (props) {
             super(props);
+            const queryParams = queryString.parse(location.search);
             this.state = {
-                projectFileUrl: null
+                projectFileUrl: null,
+                isLoadingProjectFromUrl: !!queryParams.project
             };
         }
         componentDidMount () {
             const queryParams = queryString.parse(location.search);
-            if (queryParams.projectJson) {
-                // Decode base64-encoded project JSON from URL
-                try {
-                    const json = decodeURIComponent(atob(queryParams.projectJson));
-                    const projectFile = JSON.parse(json);
-                    if (!projectFile.title || typeof projectFile.title !== 'string') {
-                        throw new Error('Project file must have a "title" string field');
-                    }
-                    this.props.onSetProjectFile(projectFile);
-                    if (projectFile.sb3 && this.props.vm) {
-                        this.loadSb3(projectFile.sb3);
-                    }
-                    if (projectFile.steps && projectFile.steps.length > 0) {
-                        const deck = {
-                            name: projectFile.title,
-                            img: projectFile.steps[0].image || '',
-                            steps: projectFile.steps.map(step => ({
-                                title: step.title,
-                                text: step.text || null,
-                                image: step.image || null,
-                                video: step.video || null
-                            }))
-                        };
-                        this.props.onSetExternalDeck(EXTERNAL_DECK_ID, deck);
-                    }
-                } catch (error) {
-                    log.error('Failed to parse projectJson from URL:', error);
-                    this.props.onSetProjectFileError(error.message);
-                }
-            } else if (queryParams.project) {
-                const url = queryParams.project;
-                this.setState({projectFileUrl: url});
-                if (url.endsWith('.sb3')) {
-                    // Claim the loading state to prevent the default project from loading
-                    this.props.onRequestProjectUpload(this.props.loadingState);
-                    this.props.onSetProjectFile({sb3: url, title: ''});
-                    if (this.props.vm) {
-                        this.loadSb3(url);
+            if (queryParams.project) {
+                const value = queryParams.project;
+                if (isUrl(value)) {
+                    this.setState({projectFileUrl: value});
+                    if (value.endsWith('.sb3')) {
+                        // Claim the loading state to prevent the default project from loading
+                        this.props.onRequestProjectUpload(this.props.loadingState);
+                        this.props.onSetProjectFile({sb3: value, title: ''});
+                        if (this.props.vm) {
+                            this.loadSb3(value);
+                        }
+                    } else {
+                        this.loadProjectFile(value);
                     }
                 } else {
-                    this.loadProjectFile(url);
+                    // Treat as base64-encoded JSON
+                    try {
+                        const json = decodeURIComponent(atob(value));
+                        const projectFile = JSON.parse(json);
+                        if (!projectFile.title || typeof projectFile.title !== 'string') {
+                            throw new Error('Project file must have a "title" string field');
+                        }
+                        this.props.onSetProjectFile(projectFile);
+                        if (projectFile.sb3 && this.props.vm) {
+                            this.loadSb3(projectFile.sb3);
+                        } else if (!projectFile.sb3) {
+                            this.setState({isLoadingProjectFromUrl: false});
+                        }
+                        this.setupDeck(projectFile);
+                    } catch (error) {
+                        log.error('Failed to parse project from URL:', error);
+                        this.props.onSetProjectFileError(error.message);
+                        this.setState({isLoadingProjectFromUrl: false});
+                    }
                 }
             }
         }
@@ -85,35 +87,39 @@ const ProjectFileHOC = function (WrappedComponent) {
                 this.loadSb3(this.props.projectFile.sb3);
             }
         }
+        setupDeck (projectFile) {
+            if (projectFile.steps && projectFile.steps.length > 0) {
+                const deck = {
+                    name: projectFile.title,
+                    img: projectFile.steps[0].image || '',
+                    steps: projectFile.steps.map(step => ({
+                        title: step.title,
+                        text: step.text || null,
+                        image: step.image || null,
+                        video: step.video || null
+                    }))
+                };
+                this.props.onSetExternalDeck(EXTERNAL_DECK_ID, deck);
+            }
+        }
         loadProjectFile (url) {
             this.props.onSetProjectFileLoading();
             fetchProjectFile(url)
                 .then(projectFile => {
                     this.props.onSetProjectFile(projectFile);
-
-                    // Set up external tutorial deck if steps exist
-                    if (projectFile.steps && projectFile.steps.length > 0) {
-                        const deck = {
-                            name: projectFile.title,
-                            img: projectFile.steps[0].image || '',
-                            steps: projectFile.steps.map(step => ({
-                                title: step.title,
-                                text: step.text || null,
-                                image: step.image || null,
-                                video: step.video || null
-                            }))
-                        };
-                        this.props.onSetExternalDeck(EXTERNAL_DECK_ID, deck);
-                    }
+                    this.setupDeck(projectFile);
 
                     // Load .sb3 if present
                     if (projectFile.sb3 && this.props.vm) {
                         this.loadSb3(projectFile.sb3);
+                    } else if (!projectFile.sb3) {
+                        this.setState({isLoadingProjectFromUrl: false});
                     }
                 })
                 .catch(error => {
                     log.error('Failed to load project file:', error);
                     this.props.onSetProjectFileError(error.message);
+                    this.setState({isLoadingProjectFromUrl: false});
                 });
         }
         loadSb3 (sb3Url) {
@@ -127,9 +133,11 @@ const ProjectFileHOC = function (WrappedComponent) {
                 .then(buffer => this.props.vm.loadProject(buffer))
                 .then(() => {
                     this.props.onProjectLoaded(LoadingState.LOADING_VM_FILE_UPLOAD);
+                    this.setState({isLoadingProjectFromUrl: false});
                 })
                 .catch(error => {
                     log.error('Failed to load sb3:', error);
+                    this.setState({isLoadingProjectFromUrl: false});
                 });
         }
         render () {
@@ -170,6 +178,7 @@ const ProjectFileHOC = function (WrappedComponent) {
 
             return (
                 <WrappedComponent
+                    projectFileLoading={this.state.isLoadingProjectFromUrl || projectFileLoading}
                     {...componentProps}
                 />
             );

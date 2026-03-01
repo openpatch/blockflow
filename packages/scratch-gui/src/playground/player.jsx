@@ -56,4 +56,4 @@ const appTarget = document.createElement('div');
 document.body.appendChild(appTarget);
 
 const root = ReactDomClient.createRoot(appTarget);
-root.render(<WrappedPlayer isPlayerOnly />);
+root.render(<WrappedPlayer isPlayerOnly isFullScreen isEmbedded />);

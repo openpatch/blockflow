@@ -503,7 +503,7 @@ class GeneratorApp extends React.Component {
         const json = this.getJSONString();
         const encoded = btoa(encodeURIComponent(json));
         const baseUrl = window.location.origin + window.location.pathname.replace(/generator\.html$/, '');
-        const url = `${baseUrl}?projectJson=${encoded}`;
+        const url = `${baseUrl}?project=${encoded}`;
         navigator.clipboard.writeText(url).then(() => {
             this.showToast('URL copied to clipboard!');
         });

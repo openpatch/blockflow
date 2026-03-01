@@ -16,7 +16,7 @@ import largeStageIcon from './icon--large-stage.svg';
 import smallStageIcon from './icon--small-stage.svg';
 import unFullScreenIcon from './icon--unfullscreen.svg';
 
-import scratchLogo from '../menu-bar/scratch-logo.svg';
+import blockflowLogo from '../menu-bar/blockflow-logo.svg';
 import styles from './stage-header.css';
 import {storeProjectThumbnail} from '../../lib/store-project-thumbnail.js';
 import dataURItoBlob from '../../lib/data-uri-to-blob.js';
@@ -96,18 +96,12 @@ const StageHeaderComponent = function (props) {
         const stageDimensions = getStageDimensions(null, true);
         const stageButton = showBranding ? (
             <div className={styles.embedScratchLogo}>
-                <a
-                    href="https://scratch.mit.edu"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                >
                     <img
-                        alt="Scratch"
-                        src={scratchLogo}
+                        alt="Blockflow"
+                        src={blockflowLogo}
                     />
-                </a>
             </div>
-        ) : projectFile ? null : (
+        ) : (
             <div className={styles.unselectWrapper}>
                 <Button
                     className={styles.stageButton}
