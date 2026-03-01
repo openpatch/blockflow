@@ -31,6 +31,14 @@ const EXTERNAL_DECK_ID = '__external__';
  */
 const isUrl = value => /^https?:\/\//.test(value) || value.startsWith('/') || value.startsWith('./');
 
+// Resolve a relative URL against document.referrer (iframe) or window.location.href
+const resolveUrl = url => {
+    if (!url) return url;
+    if (/^https?:\/\//.test(url)) return url;
+    const base = document.referrer || window.location.href;
+    return new URL(url, base).href;
+};
+
 const ProjectFileHOC = function (WrappedComponent) {
     class ProjectFileComponent extends React.Component {
         constructor (props) {
@@ -46,16 +54,17 @@ const ProjectFileHOC = function (WrappedComponent) {
             if (queryParams.project) {
                 const value = queryParams.project;
                 if (isUrl(value)) {
-                    this.setState({projectFileUrl: value});
-                    if (value.endsWith('.sb3')) {
+                    const resolvedValue = resolveUrl(value);
+                    this.setState({projectFileUrl: resolvedValue});
+                    if (resolvedValue.endsWith('.sb3')) {
                         // Claim the loading state to prevent the default project from loading
                         this.props.onRequestProjectUpload(this.props.loadingState);
-                        this.props.onSetProjectFile({sb3: value, title: ''});
+                        this.props.onSetProjectFile({sb3: resolvedValue, title: ''});
                         if (this.props.vm) {
-                            this.loadSb3(value);
+                            this.loadSb3(resolvedValue);
                         }
                     } else {
-                        this.loadProjectFile(value);
+                        this.loadProjectFile(resolvedValue);
                     }
                 } else {
                     // Treat as base64-encoded JSON
@@ -64,6 +73,22 @@ const ProjectFileHOC = function (WrappedComponent) {
                         const projectFile = JSON.parse(json);
                         if (!projectFile.title || typeof projectFile.title !== 'string') {
                             throw new Error('Project file must have a "title" string field');
+                        }
+                        // Resolve relative URLs against referrer when in an iframe
+                        if (projectFile.sb3) {
+                            projectFile.sb3 = resolveUrl(projectFile.sb3);
+                        }
+                        if (Array.isArray(projectFile.steps)) {
+                            projectFile.steps = projectFile.steps.map(step => {
+                                const resolved = Object.assign({}, step);
+                                if (resolved.image) {
+                                    resolved.image = resolveUrl(resolved.image);
+                                }
+                                if (resolved.video) {
+                                    resolved.video = resolveUrl(resolved.video);
+                                }
+                                return resolved;
+                            });
                         }
                         this.props.onSetProjectFile(projectFile);
                         if (projectFile.sb3 && this.props.vm) {

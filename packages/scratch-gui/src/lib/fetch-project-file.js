@@ -5,8 +5,9 @@
  * @returns {Promise<object>} Normalized project file object
  */
 const fetchProjectFile = async function (url) {
-    // Resolve the project file URL against the current page location
-    const absoluteUrl = new URL(url, window.location.href).href;
+    // Use document.referrer as base when in an iframe, otherwise fall back to page location
+    const base = document.referrer || window.location.href;
+    const absoluteUrl = new URL(url, base).href;
 
     const response = await fetch(absoluteUrl);
     if (!response.ok) {
