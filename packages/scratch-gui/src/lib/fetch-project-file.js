@@ -47,6 +47,32 @@ const fetchProjectFile = async function (url) {
         });
     }
 
+    // Resolve asset URLs (sounds, costumes, backdrops)
+    const resolveAssetUrls = assets => {
+        if (!Array.isArray(assets)) return assets;
+        return assets.map(item => {
+            const resolved = Object.assign({}, item);
+            if (resolved.url) {
+                resolved.url = resolveUrl(resolved.url);
+            }
+            return resolved;
+        });
+    };
+
+    projectFile.sounds = resolveAssetUrls(projectFile.sounds);
+    projectFile.costumes = resolveAssetUrls(projectFile.costumes);
+    projectFile.backdrops = resolveAssetUrls(projectFile.backdrops);
+
+    // Resolve sprite asset URLs (nested costumes and sounds)
+    if (Array.isArray(projectFile.sprites)) {
+        projectFile.sprites = projectFile.sprites.map(sprite => {
+            const resolved = Object.assign({}, sprite);
+            resolved.costumes = resolveAssetUrls(resolved.costumes);
+            resolved.sounds = resolveAssetUrls(resolved.sounds);
+            return resolved;
+        });
+    }
+
     return projectFile;
 };
 

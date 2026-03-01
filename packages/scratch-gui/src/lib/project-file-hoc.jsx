@@ -4,7 +4,9 @@ import queryString from 'query-string';
 import {connect} from 'react-redux';
 
 import fetchProjectFile from './fetch-project-file';
+import {loadProjectFileAssets} from './project-file-assets';
 import {setProjectFile, setProjectFileLoading, setProjectFileError} from '../reducers/project-file';
+import {setDynamicAssets} from '../reducers/dynamic-assets';
 import {setExternalDeck} from '../reducers/cards';
 import {setFullScreen} from '../reducers/mode';
 import {
@@ -90,10 +92,33 @@ const ProjectFileHOC = function (WrappedComponent) {
                                 return resolved;
                             });
                         }
+                        // Resolve asset URLs (sounds, costumes, backdrops)
+                        const resolveAssetUrls = assets => {
+                            if (!Array.isArray(assets)) return assets;
+                            return assets.map(item => {
+                                const resolved = Object.assign({}, item);
+                                if (resolved.url) {
+                                    resolved.url = resolveUrl(resolved.url);
+                                }
+                                return resolved;
+                            });
+                        };
+                        projectFile.sounds = resolveAssetUrls(projectFile.sounds);
+                        projectFile.costumes = resolveAssetUrls(projectFile.costumes);
+                        projectFile.backdrops = resolveAssetUrls(projectFile.backdrops);
+                        if (Array.isArray(projectFile.sprites)) {
+                            projectFile.sprites = projectFile.sprites.map(sprite => {
+                                const resolved = Object.assign({}, sprite);
+                                resolved.costumes = resolveAssetUrls(resolved.costumes);
+                                resolved.sounds = resolveAssetUrls(resolved.sounds);
+                                return resolved;
+                            });
+                        }
                         this.props.onSetProjectFile(projectFile);
                         if (projectFile.sb3 && this.props.vm) {
-                            this.loadSb3(projectFile.sb3);
+                            this.loadSb3(projectFile.sb3, projectFile);
                         } else if (!projectFile.sb3) {
+                            this.loadAssets(projectFile);
                             this.setState({isLoadingProjectFromUrl: false});
                         }
                         this.setupDeck(projectFile);
@@ -106,11 +131,35 @@ const ProjectFileHOC = function (WrappedComponent) {
             }
         }
         componentDidUpdate (prevProps) {
-            // When VM is ready and we have an sb3 to load, load it
-            if (this.props.projectFile && this.props.projectFile.sb3 &&
-                this.props.vm && !prevProps.vm) {
-                this.loadSb3(this.props.projectFile.sb3);
+            // When VM is ready and we have a project file, handle pending work
+            if (this.props.projectFile && this.props.vm && !prevProps.vm) {
+                if (this.props.projectFile.sb3) {
+                    this.loadSb3(this.props.projectFile.sb3, this.props.projectFile);
+                } else if (this.hasProjectAssets(this.props.projectFile) && !this._assetsLoaded) {
+                    this.loadAssets(this.props.projectFile);
+                }
             }
+        }
+        hasProjectAssets (projectFile) {
+            return (projectFile.sounds && projectFile.sounds.length > 0) ||
+                (projectFile.costumes && projectFile.costumes.length > 0) ||
+                (projectFile.backdrops && projectFile.backdrops.length > 0) ||
+                (projectFile.sprites && projectFile.sprites.length > 0);
+        }
+        loadAssets (projectFile) {
+            if (!this.props.vm || !this.props.vm.runtime || !this.props.vm.runtime.storage) {
+                return;
+            }
+            if (!this.hasProjectAssets(projectFile)) return;
+            this._assetsLoaded = true;
+            const storage = this.props.vm.runtime.storage;
+            loadProjectFileAssets(projectFile, storage)
+                .then(dynamicAssets => {
+                    this.props.onSetDynamicAssets(dynamicAssets);
+                })
+                .catch(error => {
+                    log.error('Failed to load project file assets:', error);
+                });
         }
         setupDeck (projectFile) {
             if (projectFile.steps && projectFile.steps.length > 0) {
@@ -136,8 +185,9 @@ const ProjectFileHOC = function (WrappedComponent) {
 
                     // Load .sb3 if present
                     if (projectFile.sb3 && this.props.vm) {
-                        this.loadSb3(projectFile.sb3);
+                        this.loadSb3(projectFile.sb3, projectFile);
                     } else if (!projectFile.sb3) {
+                        this.loadAssets(projectFile);
                         this.setState({isLoadingProjectFromUrl: false});
                     }
                 })
@@ -147,7 +197,7 @@ const ProjectFileHOC = function (WrappedComponent) {
                     this.setState({isLoadingProjectFromUrl: false});
                 });
         }
-        loadSb3 (sb3Url) {
+        loadSb3 (sb3Url, projectFile) {
             fetch(sb3Url)
                 .then(response => {
                     if (!response.ok) {
@@ -158,6 +208,9 @@ const ProjectFileHOC = function (WrappedComponent) {
                 .then(buffer => this.props.vm.loadProject(buffer))
                 .then(() => {
                     this.props.onProjectLoaded(LoadingState.LOADING_VM_FILE_UPLOAD);
+                    if (projectFile) {
+                        this.loadAssets(projectFile);
+                    }
                     this.setState({isLoadingProjectFromUrl: false});
                 })
                 .catch(error => {
@@ -172,6 +225,7 @@ const ProjectFileHOC = function (WrappedComponent) {
                 onSetProjectFileError,
                 onSetExternalDeck,
                 onSetFullScreen,
+                onSetDynamicAssets,
                 onRequestProjectUpload,
                 onProjectLoaded,
                 loadingState: loadingStateProp,
@@ -210,6 +264,7 @@ const ProjectFileHOC = function (WrappedComponent) {
         }
     }
     ProjectFileComponent.propTypes = {
+        onSetDynamicAssets: PropTypes.func.isRequired,
         onSetExternalDeck: PropTypes.func.isRequired,
         onSetProjectFile: PropTypes.func.isRequired,
         onSetProjectFileError: PropTypes.func.isRequired,
@@ -234,6 +289,7 @@ const ProjectFileHOC = function (WrappedComponent) {
         onSetProjectFile: pf => dispatch(setProjectFile(pf)),
         onSetProjectFileLoading: () => dispatch(setProjectFileLoading()),
         onSetProjectFileError: error => dispatch(setProjectFileError(error)),
+        onSetDynamicAssets: assets => dispatch(setDynamicAssets(assets)),
         onSetExternalDeck: (deckId, deck) => dispatch(setExternalDeck(deckId, deck)),
         onSetFullScreen: isFullScreen => dispatch(setFullScreen(isFullScreen)),
         onRequestProjectUpload: loadingState => dispatch(requestProjectUpload(loadingState)),

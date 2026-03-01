@@ -43,14 +43,16 @@ class BackdropLibrary extends React.Component {
         this.props.vm.addBackdrop(item.md5ext, vmBackdrop);
     }
     mergeDynamicAssets () {
-        if (this.processedBackdrops.source === this.props.dynamicBackdrops) {
+        if (this.processedBackdrops.source === this.props.dynamicBackdrops &&
+            this.processedBackdrops.showBuiltin === this.props.showBuiltinBackdrops) {
             return this.processedBackdrops.data;
         }
+        const staticAssets = this.props.showBuiltinBackdrops === false ? [] : backdropLibraryContent;
         this.processedBackdrops = mergeDynamicAssets(
-            backdropLibraryContent,
+            staticAssets,
             this.props.dynamicBackdrops
         );
-
+        this.processedBackdrops.showBuiltin = this.props.showBuiltinBackdrops;
         return this.processedBackdrops.data;
     }
     render () {
@@ -69,16 +71,22 @@ class BackdropLibrary extends React.Component {
     }
 };
 
-const mapStateToProps = state => ({
-    dynamicBackdrops: state.scratchGui.dynamicAssets.backdrops,
-    storage: state.scratchGui.config.storage
-});
+const mapStateToProps = state => {
+    const projectFile = state.scratchGui.projectFile.projectFile;
+    return {
+        storage: state.scratchGui.config.storage,
+        dynamicBackdrops: state.scratchGui.dynamicAssets.backdrops,
+        showBuiltinBackdrops: projectFile && projectFile.ui ?
+            projectFile.ui.showBuiltinBackdrops : undefined
+    };
+};
 
 BackdropLibrary.propTypes = {
     dynamicBackdrops: PropTypes.arrayOf(costumeShape),
     intl: intlShape.isRequired,
     onRequestClose: PropTypes.func,
     storage: GUIStoragePropType,
+    showBuiltinBackdrops: PropTypes.bool,
     vm: PropTypes.instanceOf(VM).isRequired
 };
 
