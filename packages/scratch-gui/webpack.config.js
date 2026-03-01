@@ -155,7 +155,8 @@ const buildConfig = baseConfig.clone()
             guistandalone: './src/playground/standalone.jsx',
             blocksonly: './src/playground/blocks-only.jsx',
             compatibilitytesting: './src/playground/compatibility-testing.jsx',
-            player: './src/playground/player.jsx'
+            player: './src/playground/player.jsx',
+            generator: './src/playground/generator.jsx'
         },
         output: {
             path: path.resolve(__dirname, 'build'),
@@ -200,6 +201,13 @@ const buildConfig = baseConfig.clone()
         filename: 'player.html',
         template: 'src/playground/index.ejs',
         title: 'Scratch 3.0 GUI: Player Example'
+    }))
+    .addPlugin(new HtmlWebpackPlugin({
+        ...commonHtmlWebpackPluginOptions,
+        chunks: ['generator'],
+        filename: 'generator.html',
+        template: 'src/playground/index.ejs',
+        title: 'Blockflow Project Generator'
     }))
     .addPlugin(new CopyWebpackPlugin({
         patterns: [
