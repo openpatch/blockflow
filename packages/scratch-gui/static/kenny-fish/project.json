@@ -1,6 +1,26 @@
 {
-  "title": "Kenny Fish",
+  "title": "Skript kopieren",
   "sb3": "fish.sb3",
+  "steps": [
+    {
+      "title": "Grüne Flagge drücken",
+      "text": "Drücke die grüne Flagge, um das Projekt zu starten. Fällt dir etwas auf? Der braune und der blaue Fisch schwimmen hin und her, aber der grüne Fisch bewegt sich nicht!",
+      "video": "steps/green_flag.mp4"
+    },
+    {
+      "title": "Skript kopieren",
+      "text": "Klicke auf den braunen Fisch (Fish Brown), um seine Figur auszuwählen. Du siehst sein Skript im Skriptbereich. Ziehe das gesamte Skript mit der rechten Maustaste und wähle \"Kopieren nach Fish Green\", um es zum grünen Fisch zu kopieren.",
+      "video": "steps/copy.mp4"
+    },
+    {
+      "title": "Skript anpassen",
+      "text": "Klicke nun auf den grünen Fisch (Fish Green), um seine Figur auszuwählen. Du siehst jetzt das kopierte Skript. Ändere die Zahl im Block \"gehe () er Schritt\", zum Beispiel auf 2, damit der grüne Fisch sich schneller bewegt als die anderen."
+    },
+    {
+      "title": "Ergebnis testen",
+      "text": "Drücke die grüne Flagge erneut. Jetzt sollten alle drei Fische schwimmen – der grüne Fisch bewegt sich mit einer anderen Geschwindigkeit!"
+    }
+  ],
   "backdrops": {
     "showBuiltin": false,
     "library": [
