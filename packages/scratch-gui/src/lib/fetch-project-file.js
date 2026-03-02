@@ -59,19 +59,38 @@ const fetchProjectFile = async function (url) {
         });
     };
 
-    projectFile.sounds = resolveAssetUrls(projectFile.sounds);
-    projectFile.costumes = resolveAssetUrls(projectFile.costumes);
-    projectFile.backdrops = resolveAssetUrls(projectFile.backdrops);
+    // Normalize an asset-type field that may be a flat array or {tags, library, showBuiltin}
+    const normalizeAssetField = field => {
+        if (!field) return field;
+        if (Array.isArray(field)) return resolveAssetUrls(field);
+        if (typeof field === 'object') {
+            const normalized = Object.assign({}, field);
+            if (Array.isArray(normalized.library)) {
+                normalized.library = resolveAssetUrls(normalized.library);
+            }
+            return normalized;
+        }
+        return field;
+    };
+
+    projectFile.sounds = normalizeAssetField(projectFile.sounds);
+    projectFile.costumes = normalizeAssetField(projectFile.costumes);
+    projectFile.backdrops = normalizeAssetField(projectFile.backdrops);
 
     // Resolve sprite asset URLs (nested costumes and sounds)
-    if (Array.isArray(projectFile.sprites)) {
-        projectFile.sprites = projectFile.sprites.map(sprite => {
-            const resolved = Object.assign({}, sprite);
-            resolved.costumes = resolveAssetUrls(resolved.costumes);
-            resolved.sounds = resolveAssetUrls(resolved.sounds);
-            return resolved;
+    const normalizeSprites = sprites => {
+        if (!sprites) return sprites;
+        const list = Array.isArray(sprites) ? sprites : (sprites.library || []);
+        const resolved = list.map(sprite => {
+            const s = Object.assign({}, sprite);
+            s.costumes = resolveAssetUrls(s.costumes);
+            s.sounds = resolveAssetUrls(s.sounds);
+            return s;
         });
-    }
+        if (Array.isArray(sprites)) return resolved;
+        return Object.assign({}, sprites, {library: resolved});
+    };
+    projectFile.sprites = normalizeSprites(projectFile.sprites);
 
     return projectFile;
 };

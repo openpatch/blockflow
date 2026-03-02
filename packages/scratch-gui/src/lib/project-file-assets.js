@@ -93,7 +93,7 @@ const fetchAndCacheAsset = async (assetDef, kind, storage) => {
     if (kind === 'sound') {
         return {
             name: assetDef.name,
-            tags: [],
+            tags: assetDef.tags || [],
             isPublic: true,
             assetId,
             dataFormat: formatInfo.dataFormat,
@@ -117,7 +117,7 @@ const fetchAndCacheAsset = async (assetDef, kind, storage) => {
 
     return {
         name: assetDef.name,
-        tags: [],
+        tags: assetDef.tags || [],
         isPublic: true,
         rawURL: assetDef.url,
         assetId,
@@ -161,7 +161,7 @@ const processSprites = async (spriteDefs, storage) => {
             const sounds = await processAssets(sprite.sounds || [], 'sound', storage);
             return {
                 name: sprite.name,
-                tags: [],
+                tags: sprite.tags || [],
                 isPublic: true,
                 isStage: false,
                 variables: {},
@@ -174,21 +174,85 @@ const processSprites = async (spriteDefs, storage) => {
 };
 
 /**
+ * Extract the library array from an asset-type field that may be a flat array
+ * or an object with {tags, library, showBuiltin}.
+ * @param {Array|object} field - asset-type field from project file
+ * @returns {Array} the library items array
+ */
+const getLibraryItems = field => {
+    if (!field) return [];
+    if (Array.isArray(field)) return field;
+    return field.library || [];
+};
+
+/**
+ * Extract tag definitions from an asset-type field.
+ * @param {Array|object} field - asset-type field from project file
+ * @returns {Array|null} tag definitions or null if not specified
+ */
+const getTagDefinitions = field => {
+    if (!field || Array.isArray(field)) return null;
+    return field.tags || null;
+};
+
+/**
+ * Extract showBuiltin flag from an asset-type field.
+ * @param {Array|object} field - asset-type field from project file
+ * @returns {boolean|null} showBuiltin flag or null
+ */
+const getShowBuiltin = field => {
+    if (!field || Array.isArray(field)) return null;
+    if (typeof field.showBuiltin === 'boolean') return field.showBuiltin;
+    return null;
+};
+
+/**
+ * Convert project-file tag definitions ({key, label}) to the format
+ * used by the TagButton component ({tag, intlLabel}).
+ * @param {Array|null} tagDefs - array of {key, label} objects
+ * @returns {Array|null} converted tags or null
+ */
+const convertTags = tagDefs => {
+    if (!tagDefs) return null;
+    return tagDefs.map(t => ({
+        tag: t.key,
+        intlLabel: {
+            id: `projectFile.tag.${t.key}`,
+            defaultMessage: t.label,
+            description: `Custom project tag: ${t.label}`
+        }
+    }));
+};
+
+/**
  * Load all project-file assets, cache them in storage, and return a
  * dynamic-assets object ready for dispatch to the Redux store.
  *
  * @param {object} projectFile - parsed project file JSON
  * @param {object} storage - vm.runtime.storage
- * @returns {Promise<{costumes: Array, sounds: Array, backdrops: Array, sprites: Array}>}
+ * @returns {Promise<object>} dynamic-assets object with assets and tags
  */
 const loadProjectFileAssets = async (projectFile, storage) => {
     const [costumes, sounds, backdrops, sprites] = await Promise.all([
-        processAssets(projectFile.costumes, 'costume', storage),
-        processAssets(projectFile.sounds, 'sound', storage),
-        processAssets(projectFile.backdrops, 'costume', storage),
-        processSprites(projectFile.sprites, storage)
+        processAssets(getLibraryItems(projectFile.costumes), 'costume', storage),
+        processAssets(getLibraryItems(projectFile.sounds), 'sound', storage),
+        processAssets(getLibraryItems(projectFile.backdrops), 'costume', storage),
+        processSprites(getLibraryItems(projectFile.sprites), storage)
     ]);
-    return {costumes, sounds, backdrops, sprites};
+    return {
+        costumes,
+        sounds,
+        backdrops,
+        sprites,
+        costumeTags: convertTags(getTagDefinitions(projectFile.costumes)),
+        soundTags: convertTags(getTagDefinitions(projectFile.sounds)),
+        backdropTags: convertTags(getTagDefinitions(projectFile.backdrops)),
+        spriteTags: convertTags(getTagDefinitions(projectFile.sprites)),
+        showBuiltinCostumes: getShowBuiltin(projectFile.costumes),
+        showBuiltinSounds: getShowBuiltin(projectFile.sounds),
+        showBuiltinBackdrops: getShowBuiltin(projectFile.backdrops),
+        showBuiltinSprites: getShowBuiltin(projectFile.sprites)
+    };
 };
 
 export {
@@ -198,5 +262,9 @@ export {
     processAssets,
     processSprites,
     extensionFromUrl,
+    getLibraryItems,
+    getTagDefinitions,
+    getShowBuiltin,
+    convertTags,
     EXTENSION_TO_FORMAT
 };

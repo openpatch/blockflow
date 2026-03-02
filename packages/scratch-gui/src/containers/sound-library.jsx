@@ -183,13 +183,21 @@ class SoundLibrary extends React.PureComponent {
             };
         });
 
+        const {soundTags: customSoundTags, showBuiltinSounds} = this.props;
+        let tags = soundTags;
+        if (showBuiltinSounds === false) {
+            tags = customSoundTags || [];
+        } else if (customSoundTags) {
+            tags = soundTags.concat(customSoundTags);
+        }
+
         return (
             <LibraryComponent
                 showPlayButton
                 data={soundLibraryThumbnailData}
                 id="soundLibrary"
                 setStopHandler={this.setStopHandler}
-                tags={soundTags}
+                tags={tags}
                 title={this.props.intl.formatMessage(messages.libraryTitle)}
                 onItemMouseEnter={this.handleItemMouseEnter}
                 onItemMouseLeave={this.handleItemMouseLeave}
@@ -207,16 +215,30 @@ SoundLibrary.propTypes = {
     onNewSound: PropTypes.func.isRequired,
     onRequestClose: PropTypes.func,
     showBuiltinSounds: PropTypes.bool,
+    soundTags: PropTypes.arrayOf(PropTypes.shape({
+        tag: PropTypes.string,
+        intlLabel: PropTypes.shape({
+            id: PropTypes.string,
+            defaultMessage: PropTypes.string
+        })
+    })),
     vm: PropTypes.instanceOf(VM).isRequired
 };
 
 const mapStateToProps = state => {
     const projectFile = state.scratchGui.projectFile.projectFile;
+    const da = state.scratchGui.dynamicAssets;
+    let showBuiltinSounds;
+    if (da.showBuiltinSounds !== null) {
+        showBuiltinSounds = da.showBuiltinSounds;
+    } else if (projectFile && projectFile.ui) {
+        showBuiltinSounds = projectFile.ui.showBuiltinSounds;
+    }
     return {
-        dynamicSounds: state.scratchGui.dynamicAssets.sounds,
+        dynamicSounds: da.sounds,
         isRtl: state.locales.isRtl,
-        showBuiltinSounds: projectFile && projectFile.ui ?
-            projectFile.ui.showBuiltinSounds : undefined
+        showBuiltinSounds,
+        soundTags: da.soundTags
     };
 };
 

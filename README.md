@@ -27,13 +27,7 @@ A project file is a JSON object that configures the Blockflow editor. It is pass
   "title": "My Project",
   "sb3": "https://example.com/project.sb3",
   "ui": {
-    "allowExtensions": false,
-    "showCostumesTab": false,
-    "showSoundsTab": false,
-    "showBuiltinCostumes": false,
-    "showBuiltinSounds": false,
-    "showBuiltinBackdrops": false,
-    "showBuiltinSprites": false
+    "allowExtensions": false
   },
   "toolbox": {
     "categories": ["motion", "looks", "events", "control"],
@@ -53,27 +47,52 @@ A project file is a JSON object that configures the Blockflow editor. It is pass
       "image": "https://example.com/step2.png"
     }
   ],
-  "costumes": [
-    { "name": "Cat", "url": "https://example.com/cat.svg" },
-    { "name": "Photo", "url": "https://example.com/photo.png", "centerX": 100, "centerY": 80 }
-  ],
-  "sounds": [
-    { "name": "Meow", "url": "https://example.com/meow.mp3" }
-  ],
-  "backdrops": [
-    { "name": "Beach", "url": "https://example.com/beach.png" }
-  ],
-  "sprites": [
-    {
-      "name": "Dog",
-      "costumes": [
-        { "name": "dog-a", "url": "https://example.com/dog-a.svg" }
-      ],
-      "sounds": [
-        { "name": "bark", "url": "https://example.com/bark.mp3" }
-      ]
-    }
-  ]
+  "costumes": {
+    "enabled": false,
+    "showBuiltin": false,
+    "tags": [
+      { "key": "animal", "label": "Animal" },
+      { "key": "person", "label": "Person" }
+    ],
+    "library": [
+      { "name": "Cat", "url": "https://example.com/cat.svg", "tags": ["animal"] },
+      { "name": "Photo", "url": "https://example.com/photo.png", "centerX": 100, "centerY": 80, "tags": ["person"] }
+    ]
+  },
+  "sounds": {
+    "enabled": false,
+    "showBuiltin": false,
+    "tags": [
+      { "key": "effect", "label": "Effect" }
+    ],
+    "library": [
+      { "name": "Meow", "url": "https://example.com/meow.mp3", "tags": ["effect"] }
+    ]
+  },
+  "backdrops": {
+    "showBuiltin": false,
+    "library": [
+      { "name": "Beach", "url": "https://example.com/beach.png" }
+    ]
+  },
+  "sprites": {
+    "showBuiltin": false,
+    "tags": [
+      { "key": "animal", "label": "Animal" }
+    ],
+    "library": [
+      {
+        "name": "Dog",
+        "tags": ["animal"],
+        "costumes": [
+          { "name": "dog-a", "url": "https://example.com/dog-a.svg" }
+        ],
+        "sounds": [
+          { "name": "bark", "url": "https://example.com/bark.mp3" }
+        ]
+      }
+    ]
+  }
 }
 ```
 
@@ -82,19 +101,27 @@ A project file is a JSON object that configures the Blockflow editor. It is pass
 | `title` | **(required)** Project name displayed in the editor. |
 | `sb3` | URL to a `.sb3` file to load into the VM. |
 | `ui.allowExtensions` | Show or hide the extensions button. |
-| `ui.showCostumesTab` | Show or hide the Costumes/Backdrops tab. |
-| `ui.showSoundsTab` | Show or hide the Sounds tab. |
-| `ui.showBuiltinCostumes` | Show or hide built-in costumes in the costume library (default: `true`). |
-| `ui.showBuiltinSounds` | Show or hide built-in sounds in the sound library (default: `true`). |
-| `ui.showBuiltinBackdrops` | Show or hide built-in backdrops in the backdrop library (default: `true`). |
-| `ui.showBuiltinSprites` | Show or hide built-in sprites in the sprite library (default: `true`). |
 | `toolbox.categories` | Array of enabled block categories (`motion`, `looks`, `sound`, `events`, `control`, `sensing`, `operators`, `variables`, `myBlocks`). |
 | `toolbox.blocks` | Object mapping category names to arrays of allowed block opcodes for fine-grained filtering. |
 | `steps` | Array of tutorial steps, each with `title`, `text`, `image`, and/or `video`. |
-| `costumes` | Array of custom costumes, each with `name`, `url`, and optional `centerX`/`centerY` (default: center of image). Appear in the costume library. |
-| `sounds` | Array of custom sounds, each with `name` and `url`. Appear in the sound library. |
-| `backdrops` | Array of custom backdrops, each with `name`, `url`, and optional `centerX`/`centerY` (default: center of image). Appear in the backdrop library. |
-| `sprites` | Array of custom sprites, each with `name`, `costumes` (array), and `sounds` (array). Appear in the sprite library. |
+| `costumes` | Custom costumes. Can be a flat array of items (backward compatible) or an object with `enabled`, `showBuiltin`, `tags`, and `library`. |
+| `costumes.enabled` | Show or hide the Costumes/Backdrops tab (default: `true`). |
+| `costumes.showBuiltin` | Show or hide built-in costumes in the costume library (default: `true`). |
+| `costumes.tags` | Array of tag definitions (`{key, label}`) for filtering. Appended to built-in tags; shown alone when `showBuiltin` is `false`. |
+| `costumes.library` | Array of costume items, each with `name`, `url`, optional `centerX`/`centerY`, and optional `tags` (array of tag keys). |
+| `sounds` | Custom sounds. Can be a flat array or an object with `enabled`, `showBuiltin`, `tags`, and `library`. |
+| `sounds.enabled` | Show or hide the Sounds tab (default: `true`). |
+| `sounds.showBuiltin` | Show or hide built-in sounds in the sound library (default: `true`). |
+| `sounds.tags` | Array of tag definitions (`{key, label}`) for filtering. Appended to built-in tags; shown alone when `showBuiltin` is `false`. |
+| `sounds.library` | Array of sound items, each with `name`, `url`, and optional `tags` (array of tag keys). |
+| `backdrops` | Custom backdrops. Can be a flat array or an object with `showBuiltin`, `tags`, and `library`. |
+| `backdrops.showBuiltin` | Show or hide built-in backdrops in the backdrop library (default: `true`). |
+| `backdrops.tags` | Array of tag definitions (`{key, label}`) for filtering. Appended to built-in tags; shown alone when `showBuiltin` is `false`. |
+| `backdrops.library` | Array of backdrop items, each with `name`, `url`, optional `centerX`/`centerY`, and optional `tags` (array of tag keys). |
+| `sprites` | Custom sprites. Can be a flat array or an object with `showBuiltin`, `tags`, and `library`. |
+| `sprites.showBuiltin` | Show or hide built-in sprites in the sprite library (default: `true`). |
+| `sprites.tags` | Array of tag definitions (`{key, label}`) for filtering. Appended to built-in tags; shown alone when `showBuiltin` is `false`. |
+| `sprites.library` | Array of sprite items, each with `name`, `costumes`, `sounds`, and optional `tags` (array of tag keys). |
 
 Relative URLs in `sb3`, `image`, `video`, and asset `url` fields are resolved relative to the project file URL.
 
