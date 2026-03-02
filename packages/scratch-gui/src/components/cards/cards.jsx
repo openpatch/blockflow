@@ -192,14 +192,22 @@ const renderSimpleMarkdown = text => {
     });
 };
 
-const TextStep = ({title, text, image}) => (<Fragment>
+const TextStep = ({title, text, image, video}) => (<Fragment>
     <div className={styles.stepTitle}>
         {title}
     </div>
     <div className={styles.stepText}>
         {renderSimpleMarkdown(text)}
     </div>
-    {image ? (
+    {video ? (
+        <div className={styles.stepVideo}>
+            <video
+                controls
+                style={{width: '466px', maxHeight: '257px'}}
+                src={video}
+            />
+        </div>
+    ) : image ? (
         <div className={styles.stepImageContainer}>
             <img
                 className={styles.stepImage}
@@ -214,7 +222,8 @@ const TextStep = ({title, text, image}) => (<Fragment>
 TextStep.propTypes = {
     image: PropTypes.string,
     text: PropTypes.string.isRequired,
-    title: PropTypes.node.isRequired
+    title: PropTypes.node.isRequired,
+    video: PropTypes.string
 };
 
 const VideoUrlStep = ({title, video}) => (<Fragment>
@@ -495,6 +504,7 @@ const Cards = props => {
                                             image={steps[step].image}
                                             text={steps[step].text}
                                             title={steps[step].title}
+                                            video={steps[step].video}
                                         />
                                     ) :
                                         steps[step].video ? (
