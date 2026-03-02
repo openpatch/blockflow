@@ -364,6 +364,10 @@ class GeneratorApp extends React.Component {
             sounds: [],
             backdrops: [],
             sprites: [],
+            costumeTags: [],
+            soundTags: [],
+            backdropTags: [],
+            spriteTags: [],
             toast: null
         };
 
@@ -557,7 +561,8 @@ class GeneratorApp extends React.Component {
         const {title, sb3, allowExtensions, showCostumesTab, showSoundsTab,
             showBuiltinCostumes, showBuiltinSounds, showBuiltinBackdrops, showBuiltinSprites,
             enabledCategories, enabledBlocks, filterAllBlocks, steps,
-            costumes, sounds, backdrops, sprites} = this.state;
+            costumes, sounds, backdrops, sprites,
+            costumeTags, soundTags, backdropTags, spriteTags} = this.state;
 
         const project = {title};
 
@@ -602,12 +607,6 @@ class GeneratorApp extends React.Component {
 
         const ui = {};
         if (!allowExtensions) ui.allowExtensions = false;
-        if (!showCostumesTab) ui.showCostumesTab = false;
-        if (!showSoundsTab) ui.showSoundsTab = false;
-        if (!showBuiltinCostumes) ui.showBuiltinCostumes = false;
-        if (!showBuiltinSounds) ui.showBuiltinSounds = false;
-        if (!showBuiltinBackdrops) ui.showBuiltinBackdrops = false;
-        if (!showBuiltinSprites) ui.showBuiltinSprites = false;
         if (Object.keys(ui).length > 0) {
             project.ui = ui;
         }
@@ -626,34 +625,66 @@ class GeneratorApp extends React.Component {
             }
         }
 
-        // Assets
+        // Assets — use nested format {showBuiltin, tags, library} when needed
         const filterAssets = arr => arr
             .filter(a => a.name && a.url)
             .map(a => {
                 const entry = {name: a.name, url: a.url};
                 if (typeof a.centerX === 'number') entry.centerX = a.centerX;
                 if (typeof a.centerY === 'number') entry.centerY = a.centerY;
+                if (a.tags && a.tags.length > 0) entry.tags = a.tags;
                 return entry;
             });
 
+        const buildAssetTypeField = (items, tags, showBuiltin, enabled) => {
+            const hasItems = items.length > 0;
+            const hasTags = tags.length > 0;
+            const hasShowBuiltin = !showBuiltin;
+            const hasEnabled = enabled === false;
+            if (!hasItems && !hasTags && !hasShowBuiltin && !hasEnabled) return null;
+            if (hasItems && !hasTags && !hasShowBuiltin && !hasEnabled) return items;
+            const field = {};
+            if (hasEnabled) field.enabled = false;
+            if (hasShowBuiltin) field.showBuiltin = false;
+            if (hasTags) field.tags = tags;
+            if (hasItems) field.library = items;
+            return field;
+        };
+
         const filteredCostumes = filterAssets(costumes);
-        const filteredSounds = sounds.filter(a => a.name && a.url).map(a => ({name: a.name, url: a.url}));
+        const filteredSounds = sounds.filter(a => a.name && a.url).map(a => {
+            const entry = {name: a.name, url: a.url};
+            if (a.tags && a.tags.length > 0) entry.tags = a.tags;
+            return entry;
+        });
         const filteredBackdrops = filterAssets(backdrops);
-        if (filteredCostumes.length > 0) project.costumes = filteredCostumes;
-        if (filteredSounds.length > 0) project.sounds = filteredSounds;
-        if (filteredBackdrops.length > 0) project.backdrops = filteredBackdrops;
+
+        const costumeField = buildAssetTypeField(filteredCostumes, costumeTags, showBuiltinCostumes,
+            showCostumesTab);
+        if (costumeField) project.costumes = costumeField;
+        const soundField = buildAssetTypeField(filteredSounds, soundTags, showBuiltinSounds,
+            showSoundsTab);
+        if (soundField) project.sounds = soundField;
+        const backdropField = buildAssetTypeField(filteredBackdrops, backdropTags, showBuiltinBackdrops);
+        if (backdropField) project.backdrops = backdropField;
 
         const filteredSprites = sprites
             .filter(s => s.name)
             .map(s => {
                 const sprite = {name: s.name};
                 const sc = filterAssets(s.costumes || []);
-                const ss = (s.sounds || []).filter(a => a.name && a.url).map(a => ({name: a.name, url: a.url}));
+                const ss = (s.sounds || []).filter(a => a.name && a.url).map(a => {
+                    const entry = {name: a.name, url: a.url};
+                    if (a.tags && a.tags.length > 0) entry.tags = a.tags;
+                    return entry;
+                });
                 if (sc.length > 0) sprite.costumes = sc;
                 if (ss.length > 0) sprite.sounds = ss;
+                if (s.tags && s.tags.length > 0) sprite.tags = s.tags;
                 return sprite;
             });
-        if (filteredSprites.length > 0) project.sprites = filteredSprites;
+        const spriteField = buildAssetTypeField(filteredSprites, spriteTags, showBuiltinSprites);
+        if (spriteField) project.sprites = spriteField;
 
         return project;
     }
@@ -738,30 +769,71 @@ class GeneratorApp extends React.Component {
     }
 
     loadFromProjectJSON (pf) {
+        // Helper to extract items from flat array or nested format
+        const getItems = field => {
+            if (!field) return [];
+            if (Array.isArray(field)) return field;
+            return field.library || [];
+        };
+        const getTags = field => {
+            if (!field || Array.isArray(field)) return [];
+            return field.tags || [];
+        };
+        const getShowBuiltin = (field, uiFallback) => {
+            if (field && !Array.isArray(field) && typeof field.showBuiltin === 'boolean') {
+                return field.showBuiltin;
+            }
+            // Backward compat: check ui.showBuiltin*
+            if (typeof uiFallback === 'boolean') return uiFallback;
+            return true;
+        };
+
+        const costumeItems = getItems(pf.costumes);
+        const soundItems = getItems(pf.sounds);
+        const backdropItems = getItems(pf.backdrops);
+        const spriteItems = getItems(pf.sprites);
+
         const newState = {
             title: pf.title || 'My Project',
             sb3: pf.sb3 || '',
             allowExtensions: !(pf.ui && pf.ui.allowExtensions === false),
-            showCostumesTab: !(pf.ui && pf.ui.showCostumesTab === false),
-            showSoundsTab: !(pf.ui && pf.ui.showSoundsTab === false),
-            showBuiltinCostumes: !(pf.ui && pf.ui.showBuiltinCostumes === false),
-            showBuiltinSounds: !(pf.ui && pf.ui.showBuiltinSounds === false),
-            showBuiltinBackdrops: !(pf.ui && pf.ui.showBuiltinBackdrops === false),
-            showBuiltinSprites: !(pf.ui && pf.ui.showBuiltinSprites === false),
-            costumes: (pf.costumes || []).map(a => ({name: a.name || '', url: a.url || '',
+            showCostumesTab: !(pf.costumes && typeof pf.costumes === 'object' &&
+                !Array.isArray(pf.costumes) && pf.costumes.enabled === false),
+            showSoundsTab: !(pf.sounds && typeof pf.sounds === 'object' &&
+                !Array.isArray(pf.sounds) && pf.sounds.enabled === false),
+            showBuiltinCostumes: getShowBuiltin(pf.costumes,
+                pf.ui && pf.ui.showBuiltinCostumes),
+            showBuiltinSounds: getShowBuiltin(pf.sounds,
+                pf.ui && pf.ui.showBuiltinSounds),
+            showBuiltinBackdrops: getShowBuiltin(pf.backdrops,
+                pf.ui && pf.ui.showBuiltinBackdrops),
+            showBuiltinSprites: getShowBuiltin(pf.sprites,
+                pf.ui && pf.ui.showBuiltinSprites),
+            costumes: costumeItems.map(a => ({name: a.name || '', url: a.url || '',
                 ...(typeof a.centerX === 'number' ? {centerX: a.centerX} : {}),
-                ...(typeof a.centerY === 'number' ? {centerY: a.centerY} : {})})),
-            sounds: (pf.sounds || []).map(a => ({name: a.name || '', url: a.url || ''})),
-            backdrops: (pf.backdrops || []).map(a => ({name: a.name || '', url: a.url || '',
+                ...(typeof a.centerY === 'number' ? {centerY: a.centerY} : {}),
+                ...(a.tags ? {tags: a.tags} : {})})),
+            sounds: soundItems.map(a => ({
+                name: a.name || '',
+                url: a.url || '',
+                ...(a.tags ? {tags: a.tags} : {})
+            })),
+            backdrops: backdropItems.map(a => ({name: a.name || '', url: a.url || '',
                 ...(typeof a.centerX === 'number' ? {centerX: a.centerX} : {}),
-                ...(typeof a.centerY === 'number' ? {centerY: a.centerY} : {})})),
-            sprites: (pf.sprites || []).map(s => ({
+                ...(typeof a.centerY === 'number' ? {centerY: a.centerY} : {}),
+                ...(a.tags ? {tags: a.tags} : {})})),
+            sprites: spriteItems.map(s => ({
                 name: s.name || '',
                 costumes: (s.costumes || []).map(a => ({name: a.name || '', url: a.url || '',
                     ...(typeof a.centerX === 'number' ? {centerX: a.centerX} : {}),
                     ...(typeof a.centerY === 'number' ? {centerY: a.centerY} : {})})),
-                sounds: (s.sounds || []).map(a => ({name: a.name || '', url: a.url || ''}))
+                sounds: (s.sounds || []).map(a => ({name: a.name || '', url: a.url || ''})),
+                ...(s.tags ? {tags: s.tags} : {})
             })),
+            costumeTags: getTags(pf.costumes),
+            soundTags: getTags(pf.sounds),
+            backdropTags: getTags(pf.backdrops),
+            spriteTags: getTags(pf.sprites),
             steps: (pf.steps || []).map(s => ({
                 title: s.title || '', text: s.text || '',
                 image: s.image || '', video: s.video || ''
@@ -821,6 +893,10 @@ class GeneratorApp extends React.Component {
             sounds: [],
             backdrops: [],
             sprites: [],
+            costumeTags: [],
+            soundTags: [],
+            backdropTags: [],
+            spriteTags: [],
             toast: null
         });
         try {
@@ -1115,6 +1191,58 @@ class GeneratorApp extends React.Component {
         );
     }
 
+    renderTagsEditor (stateKey) {
+        const tags = this.state[stateKey];
+        return (
+            <div style={{marginBottom: '8px'}}>
+                <label style={styles.label}>Tags</label>
+                {tags.map((t, i) => (
+                    <div
+                        key={i}
+                        style={{
+                            display: 'grid',
+                            gridTemplateColumns: '1fr 1fr auto',
+                            gap: '8px',
+                            marginBottom: '4px'
+                        }}
+                    >
+                        <input
+                            style={styles.input}
+                            value={t.key}
+                            onChange={e => {
+                                const updated = [...tags];
+                                updated[i] = {...updated[i], key: e.target.value};
+                                this.setState({[stateKey]: updated});
+                            }}
+                            placeholder="key"
+                        />
+                        <input
+                            style={styles.input}
+                            value={t.label}
+                            onChange={e => {
+                                const updated = [...tags];
+                                updated[i] = {...updated[i], label: e.target.value};
+                                this.setState({[stateKey]: updated});
+                            }}
+                            placeholder="Label"
+                        />
+                        <button
+                            style={styles.removeBtn}
+                            onClick={() => {
+                                const updated = tags.filter((_, idx) => idx !== i);
+                                this.setState({[stateKey]: updated});
+                            }}
+                        >✕</button>
+                    </div>
+                ))}
+                <button
+                    style={{...styles.addBtn, fontSize: '11px', padding: '4px 10px'}}
+                    onClick={() => this.setState({[stateKey]: [...tags, {key: '', label: ''}]})}
+                >+ Add Tag</button>
+            </div>
+        );
+    }
+
     render () {
         const jsonString = this.getJSONString();
 
@@ -1201,50 +1329,6 @@ class GeneratorApp extends React.Component {
                                     Show Sounds Tab
                                 </label>
                             </div>
-                            <div style={styles.field}>
-                                <label style={styles.checkboxLabel}>
-                                    <input
-                                        type="checkbox"
-                                        style={styles.checkbox}
-                                        checked={this.state.showBuiltinCostumes}
-                                        onChange={e => this.setState({showBuiltinCostumes: e.target.checked})}
-                                    />
-                                    Show Built-in Costumes
-                                </label>
-                            </div>
-                            <div style={styles.field}>
-                                <label style={styles.checkboxLabel}>
-                                    <input
-                                        type="checkbox"
-                                        style={styles.checkbox}
-                                        checked={this.state.showBuiltinSounds}
-                                        onChange={e => this.setState({showBuiltinSounds: e.target.checked})}
-                                    />
-                                    Show Built-in Sounds
-                                </label>
-                            </div>
-                            <div style={styles.field}>
-                                <label style={styles.checkboxLabel}>
-                                    <input
-                                        type="checkbox"
-                                        style={styles.checkbox}
-                                        checked={this.state.showBuiltinBackdrops}
-                                        onChange={e => this.setState({showBuiltinBackdrops: e.target.checked})}
-                                    />
-                                    Show Built-in Backdrops
-                                </label>
-                            </div>
-                            <div style={styles.field}>
-                                <label style={styles.checkboxLabel}>
-                                    <input
-                                        type="checkbox"
-                                        style={styles.checkbox}
-                                        checked={this.state.showBuiltinSprites}
-                                        onChange={e => this.setState({showBuiltinSprites: e.target.checked})}
-                                    />
-                                    Show Built-in Sprites
-                                </label>
-                            </div>
                         </div>
 
                         {/* Toolbox */}
@@ -1279,6 +1363,18 @@ class GeneratorApp extends React.Component {
                         {/* Costumes */}
                         <div style={{...styles.panel, marginBottom: '16px'}}>
                             <h2 style={styles.panelTitle}>Costumes</h2>
+                            <div style={styles.field}>
+                                <label style={styles.checkboxLabel}>
+                                    <input
+                                        type="checkbox"
+                                        style={styles.checkbox}
+                                        checked={this.state.showBuiltinCostumes}
+                                        onChange={e => this.setState({showBuiltinCostumes: e.target.checked})}
+                                    />
+                                    Show Built-in Costumes
+                                </label>
+                            </div>
+                            {this.renderTagsEditor('costumeTags')}
                             {this.state.costumes.map((c, i) =>
                                 this.renderAssetCard('costumes', c, i)
                             )}
@@ -1291,6 +1387,18 @@ class GeneratorApp extends React.Component {
                         {/* Sounds */}
                         <div style={{...styles.panel, marginBottom: '16px'}}>
                             <h2 style={styles.panelTitle}>Sounds</h2>
+                            <div style={styles.field}>
+                                <label style={styles.checkboxLabel}>
+                                    <input
+                                        type="checkbox"
+                                        style={styles.checkbox}
+                                        checked={this.state.showBuiltinSounds}
+                                        onChange={e => this.setState({showBuiltinSounds: e.target.checked})}
+                                    />
+                                    Show Built-in Sounds
+                                </label>
+                            </div>
+                            {this.renderTagsEditor('soundTags')}
                             {this.state.sounds.map((s, i) =>
                                 this.renderAssetCard('sounds', s, i)
                             )}
@@ -1303,6 +1411,18 @@ class GeneratorApp extends React.Component {
                         {/* Backdrops */}
                         <div style={{...styles.panel, marginBottom: '16px'}}>
                             <h2 style={styles.panelTitle}>Backdrops</h2>
+                            <div style={styles.field}>
+                                <label style={styles.checkboxLabel}>
+                                    <input
+                                        type="checkbox"
+                                        style={styles.checkbox}
+                                        checked={this.state.showBuiltinBackdrops}
+                                        onChange={e => this.setState({showBuiltinBackdrops: e.target.checked})}
+                                    />
+                                    Show Built-in Backdrops
+                                </label>
+                            </div>
+                            {this.renderTagsEditor('backdropTags')}
                             {this.state.backdrops.map((b, i) =>
                                 this.renderAssetCard('backdrops', b, i)
                             )}
@@ -1315,6 +1435,18 @@ class GeneratorApp extends React.Component {
                         {/* Sprites */}
                         <div style={styles.panel}>
                             <h2 style={styles.panelTitle}>Sprites</h2>
+                            <div style={styles.field}>
+                                <label style={styles.checkboxLabel}>
+                                    <input
+                                        type="checkbox"
+                                        style={styles.checkbox}
+                                        checked={this.state.showBuiltinSprites}
+                                        onChange={e => this.setState({showBuiltinSprites: e.target.checked})}
+                                    />
+                                    Show Built-in Sprites
+                                </label>
+                            </div>
+                            {this.renderTagsEditor('spriteTags')}
                             {this.state.sprites.map((sprite, i) =>
                                 this.renderSpriteCard(sprite, i)
                             )}

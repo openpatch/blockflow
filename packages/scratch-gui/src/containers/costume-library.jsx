@@ -56,12 +56,19 @@ class CostumeLibrary extends React.PureComponent {
     }
     render () {
         const data = this.mergeDynamicAssets();
+        const {costumeTags, showBuiltinCostumes} = this.props;
+        let tags = spriteTags;
+        if (showBuiltinCostumes === false) {
+            tags = costumeTags || [];
+        } else if (costumeTags) {
+            tags = spriteTags.concat(costumeTags);
+        }
         return (
             <LibraryComponent
                 data={data}
                 id="costumeLibrary"
                 storage={this.props.storage}
-                tags={spriteTags}
+                tags={tags}
                 title={this.props.intl.formatMessage(messages.libraryTitle)}
                 onItemSelected={this.handleItemSelected}
                 onRequestClose={this.props.onRequestClose}
@@ -72,15 +79,29 @@ class CostumeLibrary extends React.PureComponent {
 
 const mapStateToProps = state => {
     const projectFile = state.scratchGui.projectFile.projectFile;
+    const da = state.scratchGui.dynamicAssets;
+    let showBuiltinCostumes;
+    if (da.showBuiltinCostumes !== null) {
+        showBuiltinCostumes = da.showBuiltinCostumes;
+    } else if (projectFile && projectFile.ui) {
+        showBuiltinCostumes = projectFile.ui.showBuiltinCostumes;
+    }
     return {
         storage: state.scratchGui.config.storage,
-        dynamicCostumes: state.scratchGui.dynamicAssets.costumes,
-        showBuiltinCostumes: projectFile && projectFile.ui ?
-            projectFile.ui.showBuiltinCostumes : undefined
+        dynamicCostumes: da.costumes,
+        costumeTags: da.costumeTags,
+        showBuiltinCostumes
     };
 };
 
 CostumeLibrary.propTypes = {
+    costumeTags: PropTypes.arrayOf(PropTypes.shape({
+        tag: PropTypes.string,
+        intlLabel: PropTypes.shape({
+            id: PropTypes.string,
+            defaultMessage: PropTypes.string
+        })
+    })),
     dynamicCostumes: PropTypes.arrayOf(costumeShape),
     intl: intlShape.isRequired,
     onRequestClose: PropTypes.func,

@@ -57,12 +57,19 @@ class BackdropLibrary extends React.Component {
     }
     render () {
         const mergedAssets = this.mergeDynamicAssets();
+        const {backdropTags: customBackdropTags, showBuiltinBackdrops} = this.props;
+        let tags = backdropTags;
+        if (showBuiltinBackdrops === false) {
+            tags = customBackdropTags || [];
+        } else if (customBackdropTags) {
+            tags = backdropTags.concat(customBackdropTags);
+        }
         return (
             <LibraryComponent
                 data={mergedAssets}
                 id="backdropLibrary"
                 storage={this.props.storage}
-                tags={backdropTags}
+                tags={tags}
                 title={this.props.intl.formatMessage(messages.libraryTitle)}
                 onItemSelected={this.handleItemSelect}
                 onRequestClose={this.props.onRequestClose}
@@ -73,15 +80,29 @@ class BackdropLibrary extends React.Component {
 
 const mapStateToProps = state => {
     const projectFile = state.scratchGui.projectFile.projectFile;
+    const da = state.scratchGui.dynamicAssets;
+    let showBuiltinBackdrops;
+    if (da.showBuiltinBackdrops !== null) {
+        showBuiltinBackdrops = da.showBuiltinBackdrops;
+    } else if (projectFile && projectFile.ui) {
+        showBuiltinBackdrops = projectFile.ui.showBuiltinBackdrops;
+    }
     return {
         storage: state.scratchGui.config.storage,
-        dynamicBackdrops: state.scratchGui.dynamicAssets.backdrops,
-        showBuiltinBackdrops: projectFile && projectFile.ui ?
-            projectFile.ui.showBuiltinBackdrops : undefined
+        dynamicBackdrops: da.backdrops,
+        showBuiltinBackdrops,
+        backdropTags: da.backdropTags
     };
 };
 
 BackdropLibrary.propTypes = {
+    backdropTags: PropTypes.arrayOf(PropTypes.shape({
+        tag: PropTypes.string,
+        intlLabel: PropTypes.shape({
+            id: PropTypes.string,
+            defaultMessage: PropTypes.string
+        })
+    })),
     dynamicBackdrops: PropTypes.arrayOf(costumeShape),
     intl: intlShape.isRequired,
     onRequestClose: PropTypes.func,

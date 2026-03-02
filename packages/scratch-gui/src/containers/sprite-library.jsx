@@ -54,12 +54,19 @@ class SpriteLibrary extends React.PureComponent {
     }
     render () {
         const data = this.mergeDynamicAssets();
+        const {spriteTags: customSpriteTags, showBuiltinSprites} = this.props;
+        let tags = spriteTags;
+        if (showBuiltinSprites === false) {
+            tags = customSpriteTags || [];
+        } else if (customSpriteTags) {
+            tags = spriteTags.concat(customSpriteTags);
+        }
         return (
             <LibraryComponent
                 data={data}
                 id="spriteLibrary"
                 storage={this.props.storage}
-                tags={spriteTags}
+                tags={tags}
                 title={this.props.intl.formatMessage(messages.libraryTitle)}
                 onItemSelected={this.handleItemSelect}
                 onRequestClose={this.props.onRequestClose}
@@ -70,11 +77,18 @@ class SpriteLibrary extends React.PureComponent {
 
 const mapStateToProps = state => {
     const projectFile = state.scratchGui.projectFile.projectFile;
+    const da = state.scratchGui.dynamicAssets;
+    let showBuiltinSprites;
+    if (da.showBuiltinSprites !== null) {
+        showBuiltinSprites = da.showBuiltinSprites;
+    } else if (projectFile && projectFile.ui) {
+        showBuiltinSprites = projectFile.ui.showBuiltinSprites;
+    }
     return {
         storage: state.scratchGui.config.storage,
-        dynamicSprites: state.scratchGui.dynamicAssets.sprites,
-        showBuiltinSprites: projectFile && projectFile.ui ?
-            projectFile.ui.showBuiltinSprites : undefined
+        dynamicSprites: da.sprites,
+        showBuiltinSprites,
+        spriteTags: da.spriteTags
     };
 };
 
@@ -85,6 +99,13 @@ SpriteLibrary.propTypes = {
     onRequestClose: PropTypes.func,
     storage: GUIStoragePropType,
     showBuiltinSprites: PropTypes.bool,
+    spriteTags: PropTypes.arrayOf(PropTypes.shape({
+        tag: PropTypes.string,
+        intlLabel: PropTypes.shape({
+            id: PropTypes.string,
+            defaultMessage: PropTypes.string
+        })
+    })),
     vm: PropTypes.instanceOf(VM).isRequired
 };
 

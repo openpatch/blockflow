@@ -1,0 +1,1637 @@
+{
+  "title": "Kenny Fish",
+  "sb3": "fish.sb3",
+  "backdrops": {
+    "showBuiltin": false,
+    "library": [
+      {
+        "name": "Backdrop 1",
+        "url": "assets/backdrop_1.svg",
+        "centerX": 240,
+        "centerY": 180
+      }
+    ]
+  },
+  "costumes": {
+    "showBuiltin": false,
+    "library": [
+      {
+        "name": "background_rock_a",
+        "url": "assets/background_rock_a.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "background_rock_b",
+        "url": "assets/background_rock_b.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "background_seaweed_a",
+        "url": "assets/background_seaweed_a.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "background_seaweed_b",
+        "url": "assets/background_seaweed_b.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "background_seaweed_c",
+        "url": "assets/background_seaweed_c.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "background_seaweed_d",
+        "url": "assets/background_seaweed_d.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "background_seaweed_e",
+        "url": "assets/background_seaweed_e.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "background_seaweed_f",
+        "url": "assets/background_seaweed_f.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "background_seaweed_g",
+        "url": "assets/background_seaweed_g.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "background_seaweed_h",
+        "url": "assets/background_seaweed_h.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "background_terrain",
+        "url": "assets/background_terrain.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "background_terrain_top",
+        "url": "assets/background_terrain_top.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "bubble_a",
+        "url": "assets/bubble_a.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "bubble_b",
+        "url": "assets/bubble_b.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "bubble_c",
+        "url": "assets/bubble_c.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_blue",
+        "url": "assets/fish_blue.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_blue_outline",
+        "url": "assets/fish_blue_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_blue_skeleton",
+        "url": "assets/fish_blue_skeleton.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_blue_skeleton_outline",
+        "url": "assets/fish_blue_skeleton_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_brown",
+        "url": "assets/fish_brown.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_brown_outline",
+        "url": "assets/fish_brown_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_green",
+        "url": "assets/fish_green.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_green_outline",
+        "url": "assets/fish_green_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_green_skeleton",
+        "url": "assets/fish_green_skeleton.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_green_skeleton_outline",
+        "url": "assets/fish_green_skeleton_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_grey",
+        "url": "assets/fish_grey.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_grey_long_a",
+        "url": "assets/fish_grey_long_a.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_grey_long_a_outline",
+        "url": "assets/fish_grey_long_a_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_grey_long_b",
+        "url": "assets/fish_grey_long_b.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_grey_long_b_outline",
+        "url": "assets/fish_grey_long_b_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_grey_outline",
+        "url": "assets/fish_grey_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_orange",
+        "url": "assets/fish_orange.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_orange_outline",
+        "url": "assets/fish_orange_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_orange_skeleton",
+        "url": "assets/fish_orange_skeleton.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_orange_skeleton_outline",
+        "url": "assets/fish_orange_skeleton_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_pink",
+        "url": "assets/fish_pink.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_pink_outline",
+        "url": "assets/fish_pink_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_pink_skeleton",
+        "url": "assets/fish_pink_skeleton.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_pink_skeleton_outline",
+        "url": "assets/fish_pink_skeleton_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_red",
+        "url": "assets/fish_red.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_red_outline",
+        "url": "assets/fish_red_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_red_skeleton",
+        "url": "assets/fish_red_skeleton.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "fish_red_skeleton_outline",
+        "url": "assets/fish_red_skeleton_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_colon",
+        "url": "assets/hud_colon.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_dollar",
+        "url": "assets/hud_dollar.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_dot",
+        "url": "assets/hud_dot.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_number_0",
+        "url": "assets/hud_number_0.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_number_1",
+        "url": "assets/hud_number_1.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_number_2",
+        "url": "assets/hud_number_2.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_number_3",
+        "url": "assets/hud_number_3.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_number_4",
+        "url": "assets/hud_number_4.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_number_5",
+        "url": "assets/hud_number_5.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_number_6",
+        "url": "assets/hud_number_6.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_number_7",
+        "url": "assets/hud_number_7.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_number_8",
+        "url": "assets/hud_number_8.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_number_9",
+        "url": "assets/hud_number_9.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_percent",
+        "url": "assets/hud_percent.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "hud_plus",
+        "url": "assets/hud_plus.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "rock_a",
+        "url": "assets/rock_a.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "rock_a_outline",
+        "url": "assets/rock_a_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "rock_b",
+        "url": "assets/rock_b.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "rock_b_outline",
+        "url": "assets/rock_b_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_grass_a",
+        "url": "assets/seaweed_grass_a.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_grass_a_outline",
+        "url": "assets/seaweed_grass_a_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_grass_b",
+        "url": "assets/seaweed_grass_b.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_grass_b_outline",
+        "url": "assets/seaweed_grass_b_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_green_a",
+        "url": "assets/seaweed_green_a.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_green_a_outline",
+        "url": "assets/seaweed_green_a_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_green_b",
+        "url": "assets/seaweed_green_b.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_green_b_outline",
+        "url": "assets/seaweed_green_b_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_green_c",
+        "url": "assets/seaweed_green_c.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_green_c_outline",
+        "url": "assets/seaweed_green_c_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_green_d",
+        "url": "assets/seaweed_green_d.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_green_d_outline",
+        "url": "assets/seaweed_green_d_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_orange_a",
+        "url": "assets/seaweed_orange_a.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_orange_a_outline",
+        "url": "assets/seaweed_orange_a_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_orange_b",
+        "url": "assets/seaweed_orange_b.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_orange_b_outline",
+        "url": "assets/seaweed_orange_b_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_pink_a",
+        "url": "assets/seaweed_pink_a.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_pink_a_outline",
+        "url": "assets/seaweed_pink_a_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_pink_b",
+        "url": "assets/seaweed_pink_b.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_pink_b_outline",
+        "url": "assets/seaweed_pink_b_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_pink_c",
+        "url": "assets/seaweed_pink_c.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_pink_c_outline",
+        "url": "assets/seaweed_pink_c_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_pink_d",
+        "url": "assets/seaweed_pink_d.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "seaweed_pink_d_outline",
+        "url": "assets/seaweed_pink_d_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_a",
+        "url": "assets/terrain_dirt_a.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_b",
+        "url": "assets/terrain_dirt_b.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_c",
+        "url": "assets/terrain_dirt_c.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_d",
+        "url": "assets/terrain_dirt_d.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_a",
+        "url": "assets/terrain_dirt_top_a.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_a_outline",
+        "url": "assets/terrain_dirt_top_a_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_b",
+        "url": "assets/terrain_dirt_top_b.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_b_outline",
+        "url": "assets/terrain_dirt_top_b_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_c",
+        "url": "assets/terrain_dirt_top_c.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_c_outline",
+        "url": "assets/terrain_dirt_top_c_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_d",
+        "url": "assets/terrain_dirt_top_d.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_d_outline",
+        "url": "assets/terrain_dirt_top_d_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_e",
+        "url": "assets/terrain_dirt_top_e.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_e_outline",
+        "url": "assets/terrain_dirt_top_e_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_f",
+        "url": "assets/terrain_dirt_top_f.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_f_outline",
+        "url": "assets/terrain_dirt_top_f_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_g",
+        "url": "assets/terrain_dirt_top_g.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_g_outline",
+        "url": "assets/terrain_dirt_top_g_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_h",
+        "url": "assets/terrain_dirt_top_h.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_dirt_top_h_outline",
+        "url": "assets/terrain_dirt_top_h_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_a",
+        "url": "assets/terrain_sand_a.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_b",
+        "url": "assets/terrain_sand_b.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_c",
+        "url": "assets/terrain_sand_c.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_d",
+        "url": "assets/terrain_sand_d.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_a",
+        "url": "assets/terrain_sand_top_a.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_a_outline",
+        "url": "assets/terrain_sand_top_a_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_b",
+        "url": "assets/terrain_sand_top_b.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_b_outline",
+        "url": "assets/terrain_sand_top_b_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_c",
+        "url": "assets/terrain_sand_top_c.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_c_outline",
+        "url": "assets/terrain_sand_top_c_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_d",
+        "url": "assets/terrain_sand_top_d.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_d_outline",
+        "url": "assets/terrain_sand_top_d_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_e",
+        "url": "assets/terrain_sand_top_e.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_e_outline",
+        "url": "assets/terrain_sand_top_e_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_f",
+        "url": "assets/terrain_sand_top_f.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_f_outline",
+        "url": "assets/terrain_sand_top_f_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_g",
+        "url": "assets/terrain_sand_top_g.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_g_outline",
+        "url": "assets/terrain_sand_top_g_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_h",
+        "url": "assets/terrain_sand_top_h.svg",
+        "centerX": 32,
+        "centerY": 32
+      },
+      {
+        "name": "terrain_sand_top_h_outline",
+        "url": "assets/terrain_sand_top_h_outline.svg",
+        "centerX": 32,
+        "centerY": 32
+      }
+    ]
+  },
+  "sprites": {
+    "showBuiltin": false,
+    "library": [
+      {
+        "name": "Background Rock",
+        "costumes": [
+          {
+            "name": "background_rock_a",
+            "url": "assets/background_rock_a.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "background_rock_b",
+            "url": "assets/background_rock_b.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Background Seaweed",
+        "costumes": [
+          {
+            "name": "background_seaweed_a",
+            "url": "assets/background_seaweed_a.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "background_seaweed_b",
+            "url": "assets/background_seaweed_b.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "background_seaweed_c",
+            "url": "assets/background_seaweed_c.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "background_seaweed_d",
+            "url": "assets/background_seaweed_d.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "background_seaweed_e",
+            "url": "assets/background_seaweed_e.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "background_seaweed_f",
+            "url": "assets/background_seaweed_f.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "background_seaweed_g",
+            "url": "assets/background_seaweed_g.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "background_seaweed_h",
+            "url": "assets/background_seaweed_h.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Background Terrain",
+        "costumes": [
+          {
+            "name": "background_terrain",
+            "url": "assets/background_terrain.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "background_terrain_top",
+            "url": "assets/background_terrain_top.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Bubble",
+        "costumes": [
+          {
+            "name": "bubble_a",
+            "url": "assets/bubble_a.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "bubble_b",
+            "url": "assets/bubble_b.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "bubble_c",
+            "url": "assets/bubble_c.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Fish Blue",
+        "costumes": [
+          {
+            "name": "fish_blue",
+            "url": "assets/fish_blue.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_blue_outline",
+            "url": "assets/fish_blue_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_blue_skeleton",
+            "url": "assets/fish_blue_skeleton.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_blue_skeleton_outline",
+            "url": "assets/fish_blue_skeleton_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Fish Brown",
+        "costumes": [
+          {
+            "name": "fish_brown",
+            "url": "assets/fish_brown.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_brown_outline",
+            "url": "assets/fish_brown_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Fish Green",
+        "costumes": [
+          {
+            "name": "fish_green",
+            "url": "assets/fish_green.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_green_outline",
+            "url": "assets/fish_green_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_green_skeleton",
+            "url": "assets/fish_green_skeleton.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_green_skeleton_outline",
+            "url": "assets/fish_green_skeleton_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Fish Grey",
+        "costumes": [
+          {
+            "name": "fish_grey",
+            "url": "assets/fish_grey.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_grey_long_a",
+            "url": "assets/fish_grey_long_a.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_grey_long_a_outline",
+            "url": "assets/fish_grey_long_a_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_grey_long_b",
+            "url": "assets/fish_grey_long_b.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_grey_long_b_outline",
+            "url": "assets/fish_grey_long_b_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_grey_outline",
+            "url": "assets/fish_grey_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Fish Orange",
+        "costumes": [
+          {
+            "name": "fish_orange",
+            "url": "assets/fish_orange.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_orange_outline",
+            "url": "assets/fish_orange_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_orange_skeleton",
+            "url": "assets/fish_orange_skeleton.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_orange_skeleton_outline",
+            "url": "assets/fish_orange_skeleton_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Fish Pink",
+        "costumes": [
+          {
+            "name": "fish_pink",
+            "url": "assets/fish_pink.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_pink_outline",
+            "url": "assets/fish_pink_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_pink_skeleton",
+            "url": "assets/fish_pink_skeleton.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_pink_skeleton_outline",
+            "url": "assets/fish_pink_skeleton_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Fish Red",
+        "costumes": [
+          {
+            "name": "fish_red",
+            "url": "assets/fish_red.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_red_outline",
+            "url": "assets/fish_red_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_red_skeleton",
+            "url": "assets/fish_red_skeleton.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "fish_red_skeleton_outline",
+            "url": "assets/fish_red_skeleton_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "HUD",
+        "costumes": [
+          {
+            "name": "hud_colon",
+            "url": "assets/hud_colon.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_dollar",
+            "url": "assets/hud_dollar.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_dot",
+            "url": "assets/hud_dot.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_number_0",
+            "url": "assets/hud_number_0.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_number_1",
+            "url": "assets/hud_number_1.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_number_2",
+            "url": "assets/hud_number_2.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_number_3",
+            "url": "assets/hud_number_3.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_number_4",
+            "url": "assets/hud_number_4.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_number_5",
+            "url": "assets/hud_number_5.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_number_6",
+            "url": "assets/hud_number_6.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_number_7",
+            "url": "assets/hud_number_7.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_number_8",
+            "url": "assets/hud_number_8.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_number_9",
+            "url": "assets/hud_number_9.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_percent",
+            "url": "assets/hud_percent.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "hud_plus",
+            "url": "assets/hud_plus.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Rock A",
+        "costumes": [
+          {
+            "name": "rock_a",
+            "url": "assets/rock_a.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "rock_a_outline",
+            "url": "assets/rock_a_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Rock B",
+        "costumes": [
+          {
+            "name": "rock_b",
+            "url": "assets/rock_b.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "rock_b_outline",
+            "url": "assets/rock_b_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Seaweed Grass",
+        "costumes": [
+          {
+            "name": "seaweed_grass_a",
+            "url": "assets/seaweed_grass_a.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_grass_a_outline",
+            "url": "assets/seaweed_grass_a_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_grass_b",
+            "url": "assets/seaweed_grass_b.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_grass_b_outline",
+            "url": "assets/seaweed_grass_b_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Seaweed Green",
+        "costumes": [
+          {
+            "name": "seaweed_green_a",
+            "url": "assets/seaweed_green_a.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_green_a_outline",
+            "url": "assets/seaweed_green_a_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_green_b",
+            "url": "assets/seaweed_green_b.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_green_b_outline",
+            "url": "assets/seaweed_green_b_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_green_c",
+            "url": "assets/seaweed_green_c.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_green_c_outline",
+            "url": "assets/seaweed_green_c_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_green_d",
+            "url": "assets/seaweed_green_d.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_green_d_outline",
+            "url": "assets/seaweed_green_d_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Seaweed Orange",
+        "costumes": [
+          {
+            "name": "seaweed_orange_a",
+            "url": "assets/seaweed_orange_a.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_orange_a_outline",
+            "url": "assets/seaweed_orange_a_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_orange_b",
+            "url": "assets/seaweed_orange_b.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_orange_b_outline",
+            "url": "assets/seaweed_orange_b_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Seaweed Pink",
+        "costumes": [
+          {
+            "name": "seaweed_pink_a",
+            "url": "assets/seaweed_pink_a.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_pink_a_outline",
+            "url": "assets/seaweed_pink_a_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_pink_b",
+            "url": "assets/seaweed_pink_b.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_pink_b_outline",
+            "url": "assets/seaweed_pink_b_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_pink_c",
+            "url": "assets/seaweed_pink_c.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_pink_c_outline",
+            "url": "assets/seaweed_pink_c_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_pink_d",
+            "url": "assets/seaweed_pink_d.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "seaweed_pink_d_outline",
+            "url": "assets/seaweed_pink_d_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Terrain Dirt",
+        "costumes": [
+          {
+            "name": "terrain_dirt_a",
+            "url": "assets/terrain_dirt_a.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_b",
+            "url": "assets/terrain_dirt_b.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_c",
+            "url": "assets/terrain_dirt_c.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_d",
+            "url": "assets/terrain_dirt_d.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_a",
+            "url": "assets/terrain_dirt_top_a.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_a_outline",
+            "url": "assets/terrain_dirt_top_a_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_b",
+            "url": "assets/terrain_dirt_top_b.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_b_outline",
+            "url": "assets/terrain_dirt_top_b_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_c",
+            "url": "assets/terrain_dirt_top_c.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_c_outline",
+            "url": "assets/terrain_dirt_top_c_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_d",
+            "url": "assets/terrain_dirt_top_d.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_d_outline",
+            "url": "assets/terrain_dirt_top_d_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_e",
+            "url": "assets/terrain_dirt_top_e.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_e_outline",
+            "url": "assets/terrain_dirt_top_e_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_f",
+            "url": "assets/terrain_dirt_top_f.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_f_outline",
+            "url": "assets/terrain_dirt_top_f_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_g",
+            "url": "assets/terrain_dirt_top_g.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_g_outline",
+            "url": "assets/terrain_dirt_top_g_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_h",
+            "url": "assets/terrain_dirt_top_h.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_dirt_top_h_outline",
+            "url": "assets/terrain_dirt_top_h_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      },
+      {
+        "name": "Terrain Sand",
+        "costumes": [
+          {
+            "name": "terrain_sand_a",
+            "url": "assets/terrain_sand_a.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_b",
+            "url": "assets/terrain_sand_b.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_c",
+            "url": "assets/terrain_sand_c.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_d",
+            "url": "assets/terrain_sand_d.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_a",
+            "url": "assets/terrain_sand_top_a.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_a_outline",
+            "url": "assets/terrain_sand_top_a_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_b",
+            "url": "assets/terrain_sand_top_b.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_b_outline",
+            "url": "assets/terrain_sand_top_b_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_c",
+            "url": "assets/terrain_sand_top_c.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_c_outline",
+            "url": "assets/terrain_sand_top_c_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_d",
+            "url": "assets/terrain_sand_top_d.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_d_outline",
+            "url": "assets/terrain_sand_top_d_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_e",
+            "url": "assets/terrain_sand_top_e.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_e_outline",
+            "url": "assets/terrain_sand_top_e_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_f",
+            "url": "assets/terrain_sand_top_f.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_f_outline",
+            "url": "assets/terrain_sand_top_f_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_g",
+            "url": "assets/terrain_sand_top_g.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_g_outline",
+            "url": "assets/terrain_sand_top_g_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_h",
+            "url": "assets/terrain_sand_top_h.svg",
+            "centerX": 32,
+            "centerY": 32
+          },
+          {
+            "name": "terrain_sand_top_h_outline",
+            "url": "assets/terrain_sand_top_h_outline.svg",
+            "centerX": 32,
+            "centerY": 32
+          }
+        ]
+      }
+    ]
+  }
+}

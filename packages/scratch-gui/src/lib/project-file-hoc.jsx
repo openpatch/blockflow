@@ -103,9 +103,22 @@ const ProjectFileHOC = function (WrappedComponent) {
                                 return resolved;
                             });
                         };
-                        projectFile.sounds = resolveAssetUrls(projectFile.sounds);
-                        projectFile.costumes = resolveAssetUrls(projectFile.costumes);
-                        projectFile.backdrops = resolveAssetUrls(projectFile.backdrops);
+                        // Normalize asset-type field (flat array or {tags, library, showBuiltin})
+                        const normalizeAssetField = field => {
+                            if (!field) return field;
+                            if (Array.isArray(field)) return resolveAssetUrls(field);
+                            if (typeof field === 'object') {
+                                const normalized = Object.assign({}, field);
+                                if (Array.isArray(normalized.library)) {
+                                    normalized.library = resolveAssetUrls(normalized.library);
+                                }
+                                return normalized;
+                            }
+                            return field;
+                        };
+                        projectFile.sounds = normalizeAssetField(projectFile.sounds);
+                        projectFile.costumes = normalizeAssetField(projectFile.costumes);
+                        projectFile.backdrops = normalizeAssetField(projectFile.backdrops);
                         if (Array.isArray(projectFile.sprites)) {
                             projectFile.sprites = projectFile.sprites.map(sprite => {
                                 const resolved = Object.assign({}, sprite);
@@ -113,6 +126,17 @@ const ProjectFileHOC = function (WrappedComponent) {
                                 resolved.sounds = resolveAssetUrls(resolved.sounds);
                                 return resolved;
                             });
+                        } else if (projectFile.sprites && typeof projectFile.sprites === 'object') {
+                            const normalized = Object.assign({}, projectFile.sprites);
+                            if (Array.isArray(normalized.library)) {
+                                normalized.library = normalized.library.map(sprite => {
+                                    const resolved = Object.assign({}, sprite);
+                                    resolved.costumes = resolveAssetUrls(resolved.costumes);
+                                    resolved.sounds = resolveAssetUrls(resolved.sounds);
+                                    return resolved;
+                                });
+                            }
+                            projectFile.sprites = normalized;
                         }
                         this.props.onSetProjectFile(projectFile);
                         if (projectFile.sb3 && this.props.vm) {
@@ -141,10 +165,19 @@ const ProjectFileHOC = function (WrappedComponent) {
             }
         }
         hasProjectAssets (projectFile) {
-            return (projectFile.sounds && projectFile.sounds.length > 0) ||
-                (projectFile.costumes && projectFile.costumes.length > 0) ||
-                (projectFile.backdrops && projectFile.backdrops.length > 0) ||
-                (projectFile.sprites && projectFile.sprites.length > 0);
+            const hasItems = field => {
+                if (!field) return false;
+                if (Array.isArray(field)) return field.length > 0;
+                if (typeof field === 'object') {
+                    return (field.library && field.library.length > 0) ||
+                        (field.tags && field.tags.length > 0);
+                }
+                return false;
+            };
+            return hasItems(projectFile.sounds) ||
+                hasItems(projectFile.costumes) ||
+                hasItems(projectFile.backdrops) ||
+                hasItems(projectFile.sprites);
         }
         loadAssets (projectFile) {
             if (!this.props.vm || !this.props.vm.runtime || !this.props.vm.runtime.storage) {
@@ -247,10 +280,14 @@ const ProjectFileHOC = function (WrappedComponent) {
                 }
 
                 // Hide costumes/sounds tabs if configured
-                if (projectFile.ui && projectFile.ui.showCostumesTab === false) {
+                if (projectFile.costumes && typeof projectFile.costumes === 'object' &&
+                    !Array.isArray(projectFile.costumes) &&
+                    projectFile.costumes.enabled === false) {
                     componentProps.showCostumesTab = false;
                 }
-                if (projectFile.ui && projectFile.ui.showSoundsTab === false) {
+                if (projectFile.sounds && typeof projectFile.sounds === 'object' &&
+                    !Array.isArray(projectFile.sounds) &&
+                    projectFile.sounds.enabled === false) {
                     componentProps.showSoundsTab = false;
                 }
             }
