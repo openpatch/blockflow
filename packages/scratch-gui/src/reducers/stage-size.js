@@ -2,8 +2,10 @@ import {STAGE_DISPLAY_SIZES} from '../lib/layout-constants.js';
 
 const SET_STAGE_SIZE = 'scratch-gui/StageSize/SET_STAGE_SIZE';
 
+const isInIframe = typeof window !== 'undefined' && window.self !== window.top;
+
 const initialState = {
-    stageSize: STAGE_DISPLAY_SIZES.large
+    stageSize: isInIframe ? STAGE_DISPLAY_SIZES.small : STAGE_DISPLAY_SIZES.large
 };
 
 const reducer = function (state, action) {
