@@ -1,6 +1,7 @@
 import {BitmapAdapter, sanitizeSvg} from '@scratch/scratch-svg-renderer';
 import randomizeSpritePosition from './randomize-sprite-position.js';
 import bmpConverter from './bmp-converter';
+import webpConverter from './webp-converter';
 import gifDecoder from './gif-decoder';
 
 /**
@@ -118,6 +119,12 @@ const costumeUpload = function (fileData, fileType, storage, handleCostume, hand
         // Convert .bmp files to .png to compress them. .bmps are completely uncompressed,
         // and would otherwise take up a lot of storage space and take much longer to upload and download.
         bmpConverter(fileData).then(dataUrl => {
+            costumeUpload(dataUrl, 'image/png', storage, handleCostume);
+        });
+        return; // Return early because we're triggering another proper costumeUpload
+    }
+    case 'image/webp': {
+        webpConverter(fileData).then(dataUrl => {
             costumeUpload(dataUrl, 'image/png', storage, handleCostume);
         });
         return; // Return early because we're triggering another proper costumeUpload
