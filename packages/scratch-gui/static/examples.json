@@ -1,0 +1,8 @@
+[
+  {
+    "title": "Kenny Fish",
+    "description": "An interactive fish swimming project with step-by-step instructions.",
+    "image": "/static/kenny-fish/assets/fish-red-a.svg",
+    "projectUrl": "/static/kenny-fish/project.json"
+  }
+]

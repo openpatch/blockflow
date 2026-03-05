@@ -4,7 +4,7 @@ import queryString from 'query-string';
 import {connect} from 'react-redux';
 
 import fetchProjectFile from './fetch-project-file';
-import {loadProjectFileAssets} from './project-file-assets';
+import {loadProjectFileAssets, getShowBuiltin} from './project-file-assets';
 import {setProjectFile, setProjectFileLoading, setProjectFileError} from '../reducers/project-file';
 import {setDynamicAssets} from '../reducers/dynamic-assets';
 import {setExternalDeck} from '../reducers/cards';
@@ -14,6 +14,7 @@ import {
     requestProjectUpload,
     onLoadedProject
 } from '../reducers/project-state';
+import pako from 'pako';
 import log from './log';
 
 const EXTERNAL_DECK_ID = '__external__';
@@ -21,7 +22,7 @@ const EXTERNAL_DECK_ID = '__external__';
 /**
  * Higher Order Component to load external project files via ?project=<value>.
  * The value can be:
- * - A base64-encoded JSON project file
+ * - A pako-compressed JSON project file (prefixed with "pako:")
  * - A URL to a .sb3 file
  * - A URL to a JSON project file
  *
@@ -68,10 +69,16 @@ const ProjectFileHOC = function (WrappedComponent) {
                     } else {
                         this.loadProjectFile(resolvedValue);
                     }
-                } else {
-                    // Treat as base64-encoded JSON
+                } else if (value.startsWith('pako:')) {
+                    // Treat as pako-compressed JSON
+                    (async () => {
                     try {
-                        const json = decodeURIComponent(atob(value));
+                        const compressed = atob(value.slice(5));
+                        const bytes = new Uint8Array(compressed.length);
+                        for (let i = 0; i < compressed.length; i++) {
+                            bytes[i] = compressed.charCodeAt(i);
+                        }
+                        const json = pako.inflate(bytes, {to: 'string'});
                         const projectFile = JSON.parse(json);
                         if (!projectFile.title || typeof projectFile.title !== 'string') {
                             throw new Error('Project file must have a "title" string field');
@@ -93,32 +100,59 @@ const ProjectFileHOC = function (WrappedComponent) {
                             });
                         }
                         // Resolve asset URLs (sounds, costumes, backdrops)
-                        const resolveAssetUrls = assets => {
+                        const resolveAssetUrls = (assets, resolveUrlFn) => {
+                            const resolve = resolveUrlFn || resolveUrl;
                             if (!Array.isArray(assets)) return assets;
                             return assets.map(item => {
                                 const resolved = Object.assign({}, item);
                                 if (resolved.url) {
-                                    resolved.url = resolveUrl(resolved.url);
+                                    resolved.url = resolve(resolved.url);
                                 }
                                 return resolved;
                             });
                         };
+                        const fetchLibrary = async libraryUrl => {
+                            const absLibUrl = resolveUrl(libraryUrl);
+                            const res = await fetch(absLibUrl);
+                            if (!res.ok) {
+                                throw new Error(`Failed to fetch library: ${res.status}`);
+                            }
+                            const items = await res.json();
+                            const libBase = absLibUrl.substring(0, absLibUrl.lastIndexOf('/') + 1);
+                            const resolveLibUrl = relative => {
+                                if (!relative) return null;
+                                if (/^https?:\/\//.test(relative)) return relative;
+                                return new URL(relative, libBase).href;
+                            };
+                            return resolveAssetUrls(items, resolveLibUrl);
+                        };
+                        const resolveLibrary = async library => {
+                            if (typeof library === 'string') return fetchLibrary(library);
+                            if (Array.isArray(library)) {
+                                const parts = await Promise.all(library.map(item => {
+                                    if (typeof item === 'string') return fetchLibrary(item);
+                                    const resolved = Object.assign({}, item);
+                                    if (resolved.url) resolved.url = resolveUrl(resolved.url);
+                                    return [resolved];
+                                }));
+                                return parts.flat();
+                            }
+                            return library;
+                        };
                         // Normalize asset-type field (flat array or {tags, library, showBuiltin})
-                        const normalizeAssetField = field => {
+                        const normalizeAssetField = async field => {
                             if (!field) return field;
                             if (Array.isArray(field)) return resolveAssetUrls(field);
                             if (typeof field === 'object') {
                                 const normalized = Object.assign({}, field);
-                                if (Array.isArray(normalized.library)) {
-                                    normalized.library = resolveAssetUrls(normalized.library);
-                                }
+                                normalized.library = await resolveLibrary(normalized.library);
                                 return normalized;
                             }
                             return field;
                         };
-                        projectFile.sounds = normalizeAssetField(projectFile.sounds);
-                        projectFile.costumes = normalizeAssetField(projectFile.costumes);
-                        projectFile.backdrops = normalizeAssetField(projectFile.backdrops);
+                        projectFile.sounds = await normalizeAssetField(projectFile.sounds);
+                        projectFile.costumes = await normalizeAssetField(projectFile.costumes);
+                        projectFile.backdrops = await normalizeAssetField(projectFile.backdrops);
                         if (Array.isArray(projectFile.sprites)) {
                             projectFile.sprites = projectFile.sprites.map(sprite => {
                                 const resolved = Object.assign({}, sprite);
@@ -127,15 +161,42 @@ const ProjectFileHOC = function (WrappedComponent) {
                                 return resolved;
                             });
                         } else if (projectFile.sprites && typeof projectFile.sprites === 'object') {
-                            const normalized = Object.assign({}, projectFile.sprites);
-                            if (Array.isArray(normalized.library)) {
-                                normalized.library = normalized.library.map(sprite => {
-                                    const resolved = Object.assign({}, sprite);
-                                    resolved.costumes = resolveAssetUrls(resolved.costumes);
-                                    resolved.sounds = resolveAssetUrls(resolved.sounds);
-                                    return resolved;
+                            const fetchSpriteLibrary = async libraryUrl => {
+                                const absLibUrl = resolveUrl(libraryUrl);
+                                const res = await fetch(absLibUrl);
+                                if (!res.ok) {
+                                    throw new Error(`Failed to fetch sprite library: ${res.status}`);
+                                }
+                                const items = await res.json();
+                                const libBase = absLibUrl.substring(0, absLibUrl.lastIndexOf('/') + 1);
+                                const resolveLibUrl = relative => {
+                                    if (!relative) return null;
+                                    if (/^https?:\/\//.test(relative)) return relative;
+                                    return new URL(relative, libBase).href;
+                                };
+                                return items.map(sprite => {
+                                    const s = Object.assign({}, sprite);
+                                    s.costumes = resolveAssetUrls(s.costumes, resolveLibUrl);
+                                    s.sounds = resolveAssetUrls(s.sounds, resolveLibUrl);
+                                    return s;
                                 });
-                            }
+                            };
+                            const resolveSpriteLibrary = async library => {
+                                if (typeof library === 'string') return fetchSpriteLibrary(library);
+                                if (Array.isArray(library)) {
+                                    const parts = await Promise.all(library.map(item => {
+                                        if (typeof item === 'string') return fetchSpriteLibrary(item);
+                                        const s = Object.assign({}, item);
+                                        s.costumes = resolveAssetUrls(s.costumes);
+                                        s.sounds = resolveAssetUrls(s.sounds);
+                                        return [s];
+                                    }));
+                                    return parts.flat();
+                                }
+                                return library;
+                            };
+                            const normalized = Object.assign({}, projectFile.sprites);
+                            normalized.library = await resolveSpriteLibrary(normalized.library);
                             projectFile.sprites = normalized;
                         }
                         this.props.onSetProjectFile(projectFile);
@@ -151,6 +212,7 @@ const ProjectFileHOC = function (WrappedComponent) {
                         this.props.onSetProjectFileError(error.message);
                         this.setState({isLoadingProjectFromUrl: false});
                     }
+                    })();
                 }
             }
         }
@@ -169,6 +231,7 @@ const ProjectFileHOC = function (WrappedComponent) {
                 if (!field) return false;
                 if (Array.isArray(field)) return field.length > 0;
                 if (typeof field === 'object') {
+                    if (field.showBuiltin === false) return true;
                     return (field.library && field.library.length > 0) ||
                         (field.tags && field.tags.length > 0);
                 }
@@ -192,6 +255,21 @@ const ProjectFileHOC = function (WrappedComponent) {
                 })
                 .catch(error => {
                     log.error('Failed to load project file assets:', error);
+                    // Still propagate showBuiltin flags even if asset fetches failed
+                    this.props.onSetDynamicAssets({
+                        costumes: [],
+                        sounds: [],
+                        backdrops: [],
+                        sprites: [],
+                        costumeTags: null,
+                        soundTags: null,
+                        backdropTags: null,
+                        spriteTags: null,
+                        showBuiltinCostumes: getShowBuiltin(projectFile.costumes),
+                        showBuiltinSounds: getShowBuiltin(projectFile.sounds),
+                        showBuiltinBackdrops: getShowBuiltin(projectFile.backdrops),
+                        showBuiltinSprites: getShowBuiltin(projectFile.sprites)
+                    });
                 });
         }
         setupDeck (projectFile) {
@@ -248,6 +326,10 @@ const ProjectFileHOC = function (WrappedComponent) {
                 })
                 .catch(error => {
                     log.error('Failed to load sb3:', error);
+                    // Still load assets (costumes, sprites, etc.) even if sb3 failed
+                    if (projectFile) {
+                        this.loadAssets(projectFile);
+                    }
                     this.setState({isLoadingProjectFromUrl: false});
                 });
         }
