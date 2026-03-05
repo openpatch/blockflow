@@ -151,6 +151,7 @@ const buildConfig = baseConfig.clone()
     .enableDevServer(process.env.PORT || 8601)
     .merge({
         entry: {
+            landing: './src/playground/landing.jsx',
             gui: './src/playground/index.jsx',
             guistandalone: './src/playground/standalone.jsx',
             blocksonly: './src/playground/blocks-only.jsx',
@@ -170,9 +171,16 @@ const buildConfig = baseConfig.clone()
     })
     .addPlugin(new HtmlWebpackPlugin({
         ...commonHtmlWebpackPluginOptions,
-        chunks: ['gui'],
+        chunks: ['landing'],
         template: 'src/playground/index.ejs',
-        title: 'Scratch 3.0 GUI'
+        title: 'Blockflow'
+    }))
+    .addPlugin(new HtmlWebpackPlugin({
+        ...commonHtmlWebpackPluginOptions,
+        chunks: ['gui'],
+        filename: 'editor.html',
+        template: 'src/playground/index.ejs',
+        title: 'Blockflow Editor'
     }))
     .addPlugin(new HtmlWebpackPlugin({
         ...commonHtmlWebpackPluginOptions,

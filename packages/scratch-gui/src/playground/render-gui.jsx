@@ -9,7 +9,7 @@ import log from '../lib/log.js';
 import {PLATFORM} from '../lib/platform.js';
 
 const onClickLogo = () => {
-    window.location = 'https://blockflow.openpatch.org';
+    window.location = './';
 };
 
 const handleTelemetryModalCancel = () => {
