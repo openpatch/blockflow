@@ -3,13 +3,12 @@ const path = require('path');
 
 const test = require('tap').test;
 
-const log = require('../../src/util/log');
 const makeTestStorage = require('../fixtures/make-test-storage');
 const readFileToBuffer = require('../fixtures/readProjectFile').readFileToBuffer;
 const VirtualMachine = require('../../src/index');
 
 /**
- * @fileoverview Transform each sb2 in fixtures/execute into a test.
+ * @file Transform each sb2 in fixtures/execute into a test.
  *
  * Test execution of a group of scratch blocks by SAYing if a test did "pass",
  * or did "fail". Four keywords can be set at the beginning of a SAY messaage
@@ -65,10 +64,6 @@ fs.readdirSync(executeDir)
     .filter(uri => fileFilter.test(uri))
     .forEach(uri => {
         test(uri, async t => {
-            // Disable logging during this test.
-            log.suggest.deny('vm', 'error');
-            t.teardown(() => log.suggest.clear());
-
             const vm = new VirtualMachine();
 
             // Map string messages to tap reporting methods. This will be used

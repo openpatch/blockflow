@@ -67,10 +67,15 @@ export class LegacyStorage implements GUIStorage {
     saveProject (
         projectId: number,
         vmState: string,
-        params: { originalId: string; isCopy: boolean; isRemix: boolean; title: string; }
-    ): Promise<{ id: string | number; }> {
+        params: {originalId: string; isCopy: boolean; isRemix: boolean; title: string;}
+    ): Promise<{id: string | number;}> {
+        const host = this.projectHost;
+
+        if (!host) {
+            return Promise.reject(new Error('Project host not set'));
+        }
         // Haven't inlined the code here so that we can keep Git history on the implementation, just in case
-        return saveProjectToServer(this.projectHost, projectId, vmState, params);
+        return saveProjectToServer(host, projectId, vmState, params);
     }
 
     private cacheDefaultProject (storage: ScratchStorage) {

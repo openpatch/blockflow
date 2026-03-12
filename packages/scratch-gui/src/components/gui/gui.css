@@ -11,6 +11,10 @@
     background-color: $ui-primary;
 }
 
+.body-wrapper-without-menu-bar {
+    height: 100%;
+}
+
 .body-wrapper * {
     box-sizing: border-box;
 }
@@ -24,7 +28,6 @@
         b) for combined stage menu + stage + sprite/stage selectors
     */
     flex-direction: row;
-    height: 100%;
 
     /*
         Stop scrollbar popping in and out from scratch-blocks border issue

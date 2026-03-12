@@ -3,6 +3,7 @@ import localesReducer, {initLocale, localesInitialState} from '../reducers/local
 import locales from 'scratch-l10n';
 import {detectLocale} from './detect-locale';
 import {GUIConfig} from '../gui-config';
+import log from './log.js';
 
 interface WindowWithDevtools {
     __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
@@ -11,9 +12,9 @@ interface WindowWithDevtools {
 const composeEnhancers = (window as WindowWithDevtools).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 // TypeScript doesn't know about require here, and we don't want to change behavior, so...
-declare function require(path: '../reducers/gui'): typeof import('../reducers/gui');
-declare function require(path: 'scratch-paint'): typeof import('scratch-paint');
-declare function require(path: '../legacy-config'): typeof import('../legacy-config');
+declare function require (path: '../reducers/gui'): typeof import('../reducers/gui');
+declare function require (path: 'scratch-paint'): typeof import('scratch-paint');
+declare function require (path: '../legacy-config'): typeof import('../legacy-config');
 
 export interface EditorStateParams {
     localesOnly?: boolean;
@@ -47,7 +48,7 @@ export class EditorState {
             if (Object.keys(locales).includes(params.locale)) {
                 locale = params.locale;
             } else {
-                console.warn(`Unsupported locale ${params.locale}, falling back to en`);
+                log.warn(`Unsupported locale ${params.locale}, falling back to en`);
             }
         } else {
             locale = detectLocale(Object.keys(locales));

@@ -2,20 +2,23 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import {FormattedMessage} from 'react-intl';
-import ContextMenu from '../../lib/radix-ui-context-menu.js';
+import * as ContextMenu from '@radix-ui/react-context-menu';
 import Box from '../box/box.jsx';
 import DefaultMonitor from './default-monitor.jsx';
 import LargeMonitor from './large-monitor.jsx';
 import SliderMonitor from '../../containers/slider-monitor.jsx';
 import ListMonitor from '../../containers/list-monitor.jsx';
-import {getColorsForTheme} from '../../lib/themes/index.js';
+import {getColorsForMode} from '../../lib/settings/color-mode/index.js';
 import contextMenuStyles from '../context-menu/context-menu.css';
 import {MenuItem, BorderedMenuItem} from '../context-menu/context-menu.jsx';
 
 import styles from './monitor.css';
 
 
-// Map category name to color name used in scratch-blocks Blockly.Colours
+// Map category name to color name used in scratch-blocks Blockly.Colours. Note
+// that Blockly uses the UK spelling of "colour", so fields that interact
+// directly with Blockly follow that convention, while Scratch code uses the US
+// spelling of "color".
 const categoryColorMap = {
     data: 'data',
     sensing: 'sensing',
@@ -33,10 +36,10 @@ const modes = {
     list: ListMonitor
 };
 
-const getCategoryColor = (theme, category) => {
-    const colors = getColorsForTheme(theme);
+const getCategoryColor = (colorMode, category) => {
+    const colors = getColorsForMode(colorMode);
     return {
-        background: colors[categoryColorMap[category]].primary,
+        background: colors[categoryColorMap[category]].colourPrimary,
         text: colors.text
     };
 };
@@ -59,10 +62,13 @@ const MonitorComponent = props => (
                         props.onNextMode
                 }
             >
-                <ContextMenu.Trigger className="ContextMenuTrigger">
+                <ContextMenu.Trigger
+                    className="ContextMenuTrigger"
+                    disabled={!props.draggable}
+                >
                     {React.createElement(modes[props.mode], {
                         categoryColor: getCategoryColor(
-                            props.theme,
+                            props.colorMode,
                             props.category
                         ),
                         ...props
@@ -159,7 +165,7 @@ MonitorComponent.propTypes = {
     onSetModeToLarge: PropTypes.func,
     onSetModeToSlider: PropTypes.func,
     onSliderPromptOpen: PropTypes.func,
-    theme: PropTypes.string.isRequired
+    colorMode: PropTypes.string.isRequired
 };
 
 MonitorComponent.defaultProps = {

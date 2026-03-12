@@ -41,6 +41,8 @@ const labelMap = defineMessages({
 });
 
 const Backpack = ({
+    ariaLabel,
+    ariaRole,
     blockDragOver,
     containerRef,
     contents,
@@ -57,7 +59,11 @@ const Backpack = ({
 }) => {
     const intl = useIntl();
     return (
-        <div className={styles.backpackContainer}>
+        <section
+            className={styles.backpackContainer}
+            role={ariaRole}
+            aria-label={ariaLabel}
+        >
             <div
                 className={styles.backpackHeader}
                 onClick={onToggle}
@@ -109,35 +115,38 @@ const Backpack = ({
                             </div>
                         ) : (
                             contents.length > 0 ? (
-                                <div className={styles.backpackListInner}>
+                                <ul className={styles.backpackListInner}>
                                     {contents.map(item => (
-                                        <SpriteSelectorItem
-                                            className={styles.backpackItem}
-                                            costumeURL={item.thumbnailUrl}
-                                            details={item.name}
-                                            dragPayload={item}
-                                            dragType={dragTypeMap[item.type]}
-                                            id={item.id}
-                                            key={item.id}
-                                            name={intl.formatMessage(labelMap[item.type])}
-                                            selected={false}
-                                            onClick={noop}
-                                            onDeleteButtonClick={onDelete}
-                                        />
+                                        <li key={item.id}>
+                                            <SpriteSelectorItem
+                                                className={styles.backpackItem}
+                                                costumeURL={item.thumbnailUrl}
+                                                details={item.name}
+                                                dragPayload={item}
+                                                dragType={dragTypeMap[item.type]}
+                                                id={item.id}
+                                                name={intl.formatMessage(labelMap[item.type])}
+                                                selected={false}
+                                                onClick={noop}
+                                                onDeleteButtonClick={onDelete}
+                                            />
+                                        </li>
                                     ))}
                                     {showMore && (
-                                        <button
-                                            className={styles.more}
-                                            onClick={onMore}
-                                        >
-                                            <FormattedMessage
-                                                defaultMessage="More"
-                                                description="Load more from backpack"
-                                                id="gui.backpack.more"
-                                            />
-                                        </button>
+                                        <li>
+                                            <button
+                                                className={styles.more}
+                                                onClick={onMore}
+                                            >
+                                                <FormattedMessage
+                                                    defaultMessage="More"
+                                                    description="Load more from backpack"
+                                                    id="gui.backpack.more"
+                                                />
+                                            </button>
+                                        </li>
                                     )}
-                                </div>
+                                </ul>
                             ) : (
                                 <div className={styles.statusMessage}>
                                     <FormattedMessage
@@ -151,11 +160,13 @@ const Backpack = ({
                     )}
                 </div>
             ) : null}
-        </div>
+        </section>
     );
 };
 
 Backpack.propTypes = {
+    ariaLabel: PropTypes.string,
+    ariaRole: PropTypes.string,
     blockDragOver: PropTypes.bool,
     containerRef: PropTypes.func,
     contents: PropTypes.arrayOf(PropTypes.shape({

@@ -97,6 +97,11 @@ class Backpack extends React.Component {
 
         // Creating the payload is async, so set loading before starting
         this.setState({loading: true}, () => {
+            // If there's a failure before the backpack state changes, then we don't need to set the backpack into an
+            // error state. The operation failed, but the backpack is still potentially usable and consistent. If the
+            // backpack state might have changed on the server OR client by the time of the failure, then we should
+            // set the backpack into an error state.
+            let backpackMightHaveChanged = false;
             payloader(dragInfo.payload, this.props.vm)
                 .then(payload => {
                     // Force the asset to save to the asset server before storing in backpack
@@ -111,12 +116,18 @@ class Backpack extends React.Component {
                     }
                     return payload;
                 })
-                .then(payload => saveBackpackObject({
-                    host: this.props.host,
-                    token: this.props.token,
-                    username: this.props.username,
-                    ...payload
-                }))
+                .then(payload => {
+                    // If the backpack save fails, the local and server backpack may or may not be out of sync.
+                    // The editor might be able to function, but that might lead to lost work.
+                    // In other words, a failure here or later should set the backpack into an error state.
+                    backpackMightHaveChanged = true;
+                    return saveBackpackObject({
+                        host: this.props.host,
+                        token: this.props.token,
+                        username: this.props.username,
+                        ...payload
+                    });
+                })
                 .then(item => {
                     this.setState({
                         loading: false,
@@ -124,7 +135,7 @@ class Backpack extends React.Component {
                     });
                 })
                 .catch(error => {
-                    this.setState({error: true, loading: false});
+                    this.setState({error: backpackMightHaveChanged, loading: false});
                     throw error;
                 });
         });
@@ -223,6 +234,8 @@ class Backpack extends React.Component {
                 onMouseEnter={this.handleMouseEnter}
                 onMouseLeave={this.handleMouseLeave}
                 onToggle={this.props.host ? this.handleToggle : null}
+                ariaRole={this.props.ariaRole}
+                ariaLabel={this.props.ariaLabel}
             />
         );
     }
@@ -233,7 +246,9 @@ Backpack.propTypes = {
     host: PropTypes.string,
     token: PropTypes.string,
     username: PropTypes.string,
-    vm: PropTypes.instanceOf(VM)
+    vm: PropTypes.instanceOf(VM),
+    ariaRole: PropTypes.string,
+    ariaLabel: PropTypes.string
 };
 
 const getTokenAndUsername = state => {

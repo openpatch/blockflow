@@ -11,8 +11,9 @@ const AuthorInfo = ({
     imageUrl,
     projectTitle,
     // TODO: use userId to link to user's profile
-    userId, // eslint-disable-line no-unused-vars
-    username
+    userId,
+    username,
+    avatarBadge
 }) => (
     <div
         className={classNames(
@@ -23,6 +24,8 @@ const AuthorInfo = ({
         <UserAvatar
             className={styles.avatar}
             imageUrl={imageUrl}
+            showAvatarBadge={!!avatarBadge}
+            wrapperClassName={styles.avatarWrapper}
         />
         <div className={styles.titleAuthor}>
             <span className={styles.projectTitle}>
@@ -54,7 +57,8 @@ AuthorInfo.propTypes = {
     imageUrl: PropTypes.string,
     projectTitle: PropTypes.string,
     userId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-    username: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
+    username: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+    avatarBadge: PropTypes.number
 };
 
 export default AuthorInfo;

@@ -10,10 +10,11 @@ exports[`MonitorListComponent it renders the correct step size for discrete slid
   >
     <div
       class="react-draggable"
-      style="top: 5px; left: 5px;"
+      style="transform: translate(0px,0px); top: 5px; left: 5px;"
     >
       <span
         class="ContextMenuTrigger"
+        data-disabled=""
         data-state="closed"
       >
         <div>
@@ -50,10 +51,11 @@ exports[`MonitorListComponent it renders the correct step size for non-discrete 
   >
     <div
       class="react-draggable"
-      style="top: 5px; left: 5px;"
+      style="transform: translate(0px,0px); top: 5px; left: 5px;"
     >
       <span
         class="ContextMenuTrigger"
+        data-disabled=""
         data-state="closed"
       >
         <div>
