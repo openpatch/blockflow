@@ -4,6 +4,7 @@ import React from 'react';
 import VM from '@scratch/scratch-vm';
 
 import {connect} from 'react-redux';
+import {isContentNodeFocused} from 'scratch-blocks';
 
 import {updateTargets} from '../reducers/targets';
 import {updateBlockDrag} from '../reducers/block-drag';
@@ -88,7 +89,13 @@ const vmListenerHOC = function (WrappedComponent) {
         }
         handleKeyDown (e) {
             // Don't capture keys intended for Blockly inputs.
-            if (e.target !== document && e.target !== document.body) return;
+            if (e.target !== document && e.target !== document.body) {
+                // Allow events from inside the Blockly workspace when no
+                // specific block or comment has focus — i.e. when the workspace
+                // background itself is focused. In that case key presses should
+                // reach the VM for key-sensing just like any other key press.
+                if (isContentNodeFocused()) return;
+            }
 
             const key = (!e.key || e.key === 'Dead') ? e.keyCode : e.key;
             this.props.vm.postIOData('keyboard', {
