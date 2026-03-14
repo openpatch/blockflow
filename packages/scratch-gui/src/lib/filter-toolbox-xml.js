@@ -8,17 +8,17 @@
  * @returns {string} Filtered toolbox XML
  */
 
-// Map PLAN.md category names to XML category IDs
+// Map project file category names to toolboxitemid values in make-toolbox-xml.js
 const categoryIdMap = {
     motion: 'motion',
     looks: 'looks',
     sound: 'sound',
-    events: 'event',
+    events: 'events',
     control: 'control',
     sensing: 'sensing',
     operators: 'operators',
-    variables: 'data',
-    myBlocks: 'procedures'
+    variables: 'variables',
+    myBlocks: 'myBlocks'
 };
 
 const filterToolboxXML = function (toolboxXML, toolboxConfig) {
@@ -32,10 +32,10 @@ const filterToolboxXML = function (toolboxXML, toolboxConfig) {
             toolboxConfig.categories.map(name => categoryIdMap[name] || name)
         );
 
-        // Remove category elements whose id is not in the whitelist
-        // Match <category ... id="xxx" ...>...</category> including nested content
+        // Remove category elements whose toolboxitemid is not in the whitelist
+        // Match <category ... toolboxitemid="xxx" ...>...</category> including nested content
         filtered = filtered.replace(
-            /<category\b[^>]*\bid="([^"]*)"[^>]*>[\s\S]*?<\/category>/g,
+            /<category\b[^>]*\btoolboxitemid="([^"]*)"[^>]*>[\s\S]*?<\/category>/g,
             (match, id) => (allowedIds.has(id) ? match : '')
         );
 
@@ -51,7 +51,7 @@ const filterToolboxXML = function (toolboxXML, toolboxConfig) {
 
             // Find the category and filter its blocks
             const categoryRegex = new RegExp(
-                `(<category\\b[^>]*\\bid="${categoryId}"[^>]*>)([\\s\\S]*?)(</category>)`,
+                `(<category\\b[^>]*\\btoolboxitemid="${categoryId}"[^>]*>)([\\s\\S]*?)(</category>)`,
                 'g'
             );
 
