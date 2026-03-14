@@ -199,13 +199,24 @@ class Blocks extends React.Component {
             this.props.customProceduresVisible !== nextProps.customProceduresVisible ||
             this.props.locale !== nextProps.locale ||
             this.props.anyModalVisible !== nextProps.anyModalVisible ||
-            this.props.stageSize !== nextProps.stageSize
+            this.props.stageSize !== nextProps.stageSize ||
+            this.props.toolboxConfig !== nextProps.toolboxConfig
         );
     }
     componentDidUpdate (prevProps) {
         // If any modals are open, call hideChaff to close z-indexed field editors
         if (this.props.anyModalVisible && !prevProps.anyModalVisible) {
             this.ScratchBlocks.hideChaff();
+        }
+
+        // When the toolbox filter config changes (e.g. project file loaded
+        // from URL), regenerate the filtered toolbox XML so hidden categories
+        // and blocks are applied.
+        if (this.props.toolboxConfig !== prevProps.toolboxConfig) {
+            const toolboxXML = this.getToolboxXML();
+            if (toolboxXML) {
+                this.props.updateToolboxState(toolboxXML);
+            }
         }
 
         // Only rerender the toolbox when the blocks are visible and the xml is
