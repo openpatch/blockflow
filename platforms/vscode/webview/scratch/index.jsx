@@ -1,11 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {compose} from 'redux';
 
 import GUI from '../../../../packages/scratch-gui/src/containers/gui.jsx';
 import {AppStateProviderHOC} from '../../../../packages/scratch-gui/src/lib/app-state-provider-hoc.jsx';
 import {EditorState} from '../../../../packages/scratch-gui/src/lib/editor-state';
-import HashParserHOC from '../../../../packages/scratch-gui/src/lib/hash-parser-hoc.jsx';
 
 import {isInVsCode, sendReady, sendEdit, onMessage, base64ToArrayBuffer, arrayBufferToBase64} from './vscode-bridge.js';
 
@@ -46,10 +44,11 @@ function initEditor () {
 
     editorState = new EditorState({});
 
-    const WrappedGui = compose(
-        AppStateProviderHOC,
-        HashParserHOC
-    )(GUI);
+    // Use the default GUI export which includes the full HOC chain:
+    // LocalizationHOC → ErrorBoundary → FontLoader → QueryParser →
+    // ProjectFileHOC → ProjectFetcher → Titled → ProjectSaver →
+    // vmListener → vmManager → SBFileUploader → cloudManager → systemPreferences
+    const WrappedGui = AppStateProviderHOC(GUI);
 
     GUI.setAppElement(container);
 
