@@ -744,6 +744,120 @@ const styles = {
 
 const STORAGE_KEY = 'blockflow-generator-state';
 
+/**
+ * Convert a .blockflow project file JSON object into GeneratorApp internal state.
+ * This is the reverse of buildProjectJSON().
+ */
+export const projectFileToState = pf => {
+    const state = {};
+
+    if (pf.title) state.title = pf.title;
+    if (pf.sb3) state.sb3 = pf.sb3;
+
+    // UI settings
+    if (pf.ui) {
+        if (typeof pf.ui.allowExtensions === 'boolean') {
+            state.allowExtensions = pf.ui.allowExtensions;
+        }
+    }
+
+    // Toolbox
+    if (pf.toolbox) {
+        if (pf.toolbox.categories) {
+            state.enabledCategories = new Set(pf.toolbox.categories);
+        }
+        if (pf.toolbox.blocks) {
+            state.filterAllBlocks = true;
+            const eb = {};
+            for (const key of Object.keys(pf.toolbox.blocks)) {
+                eb[key] = new Set(pf.toolbox.blocks[key]);
+            }
+            // Fill missing categories with all blocks enabled
+            for (const key of CATEGORY_KEYS) {
+                if (!eb[key]) {
+                    eb[key] = new Set(CATEGORIES[key].blocks);
+                }
+            }
+            state.enabledBlocks = eb;
+        }
+    }
+
+    // Steps
+    if (pf.steps && Array.isArray(pf.steps)) {
+        state.steps = pf.steps.map(s => ({
+            title: s.title || '',
+            text: s.text || '',
+            image: s.image || '',
+            video: s.video || ''
+        }));
+    }
+
+    // Helper to parse asset type fields
+    const parseAssetField = field => {
+        const result = {items: [], tags: [], showBuiltin: true, enabled: true, libraryUrls: []};
+        if (!field) return result;
+
+        // Field can be an array (inline items only) or an object with library/tags/showBuiltin
+        if (Array.isArray(field)) {
+            result.items = field.filter(a => typeof a === 'object');
+            result.libraryUrls = field.filter(a => typeof a === 'string');
+            return result;
+        }
+
+        if (typeof field.enabled === 'boolean') result.enabled = field.enabled;
+        if (typeof field.showBuiltin === 'boolean') result.showBuiltin = field.showBuiltin;
+        if (field.tags) result.tags = field.tags;
+
+        if (field.library) {
+            const lib = Array.isArray(field.library) ? field.library : [field.library];
+            result.items = lib.filter(a => typeof a === 'object');
+            result.libraryUrls = lib.filter(a => typeof a === 'string');
+        }
+
+        return result;
+    };
+
+    // Costumes
+    if (pf.costumes) {
+        const c = parseAssetField(pf.costumes);
+        state.showCostumesTab = c.enabled;
+        state.showBuiltinCostumes = c.showBuiltin;
+        state.costumeTags = c.tags;
+        state.costumeLibraryUrls = c.libraryUrls;
+        state.costumes = c.items;
+    }
+
+    // Sounds
+    if (pf.sounds) {
+        const s = parseAssetField(pf.sounds);
+        state.showSoundsTab = s.enabled;
+        state.showBuiltinSounds = s.showBuiltin;
+        state.soundTags = s.tags;
+        state.soundLibraryUrls = s.libraryUrls;
+        state.sounds = s.items;
+    }
+
+    // Backdrops
+    if (pf.backdrops) {
+        const b = parseAssetField(pf.backdrops);
+        state.showBuiltinBackdrops = b.showBuiltin;
+        state.backdropTags = b.tags;
+        state.backdropLibraryUrls = b.libraryUrls;
+        state.backdrops = b.items;
+    }
+
+    // Sprites
+    if (pf.sprites) {
+        const sp = parseAssetField(pf.sprites);
+        state.showBuiltinSprites = sp.showBuiltin;
+        state.spriteTags = sp.tags;
+        state.spriteLibraryUrls = sp.libraryUrls;
+        state.sprites = sp.items;
+    }
+
+    return state;
+};
+
 // Serialize state for localStorage (Sets → Arrays)
 const serializeState = state => {
     const s = {...state};
@@ -847,15 +961,21 @@ class GeneratorApp extends React.Component {
         }
         this.state.enabledBlocks = enabledBlocks;
 
-        // Restore from localStorage if available
-        try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                const restored = deserializeState(saved);
-                Object.assign(this.state, restored);
+        // If an initial project file is provided (e.g., from VS Code), use it
+        if (props.initialProjectFile) {
+            const restored = projectFileToState(props.initialProjectFile);
+            Object.assign(this.state, restored);
+        } else {
+            // Restore from localStorage if available
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const restored = deserializeState(saved);
+                    Object.assign(this.state, restored);
+                }
+            } catch (_) {
+                // Ignore parse errors
             }
-        } catch (_) {
-            // Ignore parse errors
         }
 
         this._fileInput = React.createRef();
@@ -868,6 +988,10 @@ class GeneratorApp extends React.Component {
                 localStorage.setItem(STORAGE_KEY, serializeState(this.state));
             } catch (_e) {
                 // Ignore quota errors
+            }
+            // Notify external listener (e.g., VS Code extension) of project file changes
+            if (this.props.onProjectFileChange) {
+                this.props.onProjectFileChange(this.buildProjectJSON());
             }
         }
         // Debounced preview update
