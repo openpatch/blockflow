@@ -19,6 +19,7 @@ let currentProjectFile = null;
 
 const previewScriptUrl = window.__WEBVIEW_DATA__?.previewScriptUrl || null;
 const previewBasePath = window.__WEBVIEW_DATA__?.previewBasePath || null;
+const cspNonce = window.__CSP_NONCE__ || '';
 
 function renderApp (projectFile) {
     const appTarget = document.getElementById('root');
@@ -36,6 +37,7 @@ function renderApp (projectFile) {
             onProjectFileChange={handleProjectFileChange}
             previewScriptUrl={previewScriptUrl}
             previewBasePath={previewBasePath}
+            cspNonce={cspNonce}
         />
     );
 }

@@ -61,7 +61,8 @@ export function getHtmlForWebview(
         : '';
 
     // Inject base path for runtime asset resolution (blocks-media, static files)
-    const basePathScript = `<script nonce="${nonce}">window.__WEBVIEW_BASE_PATH__ = "${baseUri}/";</script>`;
+    // and CSP nonce so srcdoc iframes can include nonced scripts
+    const basePathScript = `<script nonce="${nonce}">window.__WEBVIEW_BASE_PATH__ = "${baseUri}/"; window.__CSP_NONCE__ = "${nonce}";</script>`;
 
     return /* html */ `<!DOCTYPE html>
 <html lang="en">

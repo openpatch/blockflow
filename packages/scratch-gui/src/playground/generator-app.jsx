@@ -1288,14 +1288,16 @@ class GeneratorApp extends React.Component {
             // VS Code webview mode: use srcdoc because vscode-resource URLs
             // cannot be used as iframe src (ERR_NAME_NOT_RESOLVED)
             const bPath = this.props.previewBasePath || '';
+            const nonce = this.props.cspNonce || '';
+            const nonceAttr = nonce ? ` nonce="${nonce}"` : '';
             const srcdoc = [
                 '<!DOCTYPE html><html><head><meta charset="UTF-8">',
                 '<style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}',
                 '#root{width:100%;height:100%}</style>',
                 '</head><body><div id="root"></div>',
-                `<script>window.__PREVIEW_PROJECT_DATA__=${JSON.stringify(encoded)};`,
+                `<script${nonceAttr}>window.__PREVIEW_PROJECT_DATA__=${JSON.stringify(encoded)};`,
                 `window.__WEBVIEW_BASE_PATH__=${JSON.stringify(bPath)};</script>`,
-                `<script src="${this.props.previewScriptUrl}"></script>`,
+                `<script${nonceAttr} src="${this.props.previewScriptUrl}"></script>`,
                 '</body></html>'
             ].join('');
             this.setState({previewUrl: '', previewSrcdoc: srcdoc});
