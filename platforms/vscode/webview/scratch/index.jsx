@@ -20,10 +20,15 @@ history.replaceState = (...args) => {
     try { _origReplaceState(...args); } catch (_) { /* ignore in webview */ }
 };
 
-// Detect preview mode: loaded in an iframe with ?project= parameter
-// or with inline data from srcdoc (VS Code blockflow preview)
-const isPreviewMode = new URLSearchParams(window.location.search).has('project') ||
-    typeof window.__PREVIEW_PROJECT_DATA__ === 'string';
+// Detect preview mode: data injected by extension host for blockflow preview
+const previewProjectData = window.__WEBVIEW_DATA__?.previewProjectData || null;
+const isPreviewMode = previewProjectData !== null ||
+    new URLSearchParams(window.location.search).has('project');
+
+// If preview data is injected, set it as a global for ProjectFileHOC
+if (previewProjectData) {
+    window.__PREVIEW_PROJECT_DATA__ = previewProjectData;
+}
 
 // Base path for static assets (blocks-media, etc.)
 const basePath = window.__WEBVIEW_BASE_PATH__ || './';

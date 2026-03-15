@@ -33,3 +33,7 @@ export function sendReady () {
 export function sendEdit (content) {
     postMessage({type: 'edit', content});
 }
+
+export function sendMessage (message) {
+    postMessage(message);
+}

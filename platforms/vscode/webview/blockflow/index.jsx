@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDomClient from 'react-dom/client';
 
 import GeneratorApp from '../../../../packages/scratch-gui/src/playground/generator-app.jsx';
-import {sendReady, sendEdit, onMessage} from './vscode-bridge.js';
+import {sendReady, sendEdit, onMessage, sendMessage} from './vscode-bridge.js';
 
 // Safety-wrap history.pushState/replaceState for VS Code webview compatibility
 const _origPushState = history.pushState.bind(history);
@@ -17,9 +17,9 @@ history.replaceState = (...args) => {
 let root = null;
 let currentProjectFile = null;
 
-const previewScriptUrl = window.__WEBVIEW_DATA__?.previewScriptUrl || null;
-const previewBasePath = window.__WEBVIEW_DATA__?.previewBasePath || null;
-const cspNonce = window.__CSP_NONCE__ || '';
+function handlePreview (encodedProjectData) {
+    sendMessage({type: 'preview', content: encodedProjectData});
+}
 
 function renderApp (projectFile) {
     const appTarget = document.getElementById('root');
@@ -33,11 +33,10 @@ function renderApp (projectFile) {
     root = ReactDomClient.createRoot(appTarget);
     root.render(
         <GeneratorApp
+            embedded
             initialProjectFile={projectFile}
             onProjectFileChange={handleProjectFileChange}
-            previewScriptUrl={previewScriptUrl}
-            previewBasePath={previewBasePath}
-            cspNonce={cspNonce}
+            onPreview={handlePreview}
         />
     );
 }

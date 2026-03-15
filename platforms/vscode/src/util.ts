@@ -34,7 +34,6 @@ export function getHtmlForWebview(
     options?: {
         cssName?: string;
         data?: Record<string, string>;
-        allowFrames?: boolean;
     }
 ): string {
     const scriptUri = webview.asWebviewUri(
@@ -55,14 +54,11 @@ export function getHtmlForWebview(
     const nonce = getNonce();
 
     const scratchHosts = 'https://assets.scratch.mit.edu https://cdn.assets.scratch.mit.edu https://projects.scratch.mit.edu';
-    const frameSrc = options?.allowFrames ? `frame-src ${webview.cspSource};` : '';
     const dataScript = options?.data
         ? `<script nonce="${nonce}">window.__WEBVIEW_DATA__ = ${JSON.stringify(options.data)};</script>`
         : '';
 
-    // Inject base path for runtime asset resolution (blocks-media, static files)
-    // and CSP nonce so srcdoc iframes can include nonced scripts
-    const basePathScript = `<script nonce="${nonce}">window.__WEBVIEW_BASE_PATH__ = "${baseUri}/"; window.__CSP_NONCE__ = "${nonce}";</script>`;
+    const basePathScript = `<script nonce="${nonce}">window.__WEBVIEW_BASE_PATH__ = "${baseUri}/";</script>`;
 
     return /* html */ `<!DOCTYPE html>
 <html lang="en">
@@ -78,7 +74,6 @@ export function getHtmlForWebview(
         worker-src blob:;
         media-src ${webview.cspSource} data: blob: ${scratchHosts};
         connect-src ${webview.cspSource} data: blob: ${scratchHosts};
-        ${frameSrc}
     ">
     ${cssUri ? `<link rel="stylesheet" href="${cssUri}">` : ''}
     <title>Blockflow</title>

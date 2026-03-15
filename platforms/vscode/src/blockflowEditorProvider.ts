@@ -30,22 +30,13 @@ export class BlockflowEditorProvider implements vscode.CustomTextEditorProvider 
     ): Promise<void> {
         webviewPanel.webview.options = getWebviewOptions(this.context.extensionUri);
 
-        const scratchScriptUri = webviewPanel.webview.asWebviewUri(
-            vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'webview', 'scratch.js')
-        );
-        const webviewBaseUri = webviewPanel.webview.asWebviewUri(
-            vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'webview')
-        );
-
         webviewPanel.webview.html = getHtmlForWebview(
             webviewPanel.webview,
             this.context.extensionUri,
             'blockflow.js',
             {
-                allowFrames: true,
                 data: {
-                    previewScriptUrl: scratchScriptUri.toString(),
-                    previewBasePath: `${webviewBaseUri.toString()}/`,
+                    hasPreview: 'true',
                 },
             }
         );
@@ -53,6 +44,9 @@ export class BlockflowEditorProvider implements vscode.CustomTextEditorProvider 
         // Track whether we're currently applying an edit from the webview
         // to avoid echoing it back
         let isApplyingEdit = false;
+
+        // Preview panel management
+        let previewPanel: vscode.WebviewPanel | undefined;
 
         // Send the document content to the webview
         const updateWebview = () => {
@@ -87,6 +81,41 @@ export class BlockflowEditorProvider implements vscode.CustomTextEditorProvider 
                         }
                         return;
                     }
+
+                    case 'preview': {
+                        const projectData = message.content as string;
+                        if (previewPanel) {
+                            // Update existing preview panel
+                            previewPanel.webview.html = getHtmlForWebview(
+                                previewPanel.webview,
+                                this.context.extensionUri,
+                                'scratch.js',
+                                { data: { previewProjectData: projectData } }
+                            );
+                            previewPanel.reveal(vscode.ViewColumn.Beside, true);
+                        } else {
+                            // Create new preview panel beside the editor
+                            previewPanel = vscode.window.createWebviewPanel(
+                                'blockflow.preview',
+                                'Blockflow Preview',
+                                { viewColumn: vscode.ViewColumn.Beside, preserveFocus: true },
+                                {
+                                    ...getWebviewOptions(this.context.extensionUri),
+                                    retainContextWhenHidden: true,
+                                }
+                            );
+                            previewPanel.webview.html = getHtmlForWebview(
+                                previewPanel.webview,
+                                this.context.extensionUri,
+                                'scratch.js',
+                                { data: { previewProjectData: projectData } }
+                            );
+                            previewPanel.onDidDispose(() => {
+                                previewPanel = undefined;
+                            });
+                        }
+                        return;
+                    }
                 }
             }
         );
@@ -103,6 +132,10 @@ export class BlockflowEditorProvider implements vscode.CustomTextEditorProvider 
         webviewPanel.onDidDispose(() => {
             messageDisposable.dispose();
             changeDocumentDisposable.dispose();
+            if (previewPanel) {
+                previewPanel.dispose();
+                previewPanel = undefined;
+            }
         });
     }
 }

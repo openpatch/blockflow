@@ -949,7 +949,6 @@ class GeneratorApp extends React.Component {
             dragOverIndex: null,
             showPreview: false,
             previewUrl: '',
-            previewSrcdoc: '',
             editingSpriteIndex: null,
             validationErrors: {},
             libraryPreviews: {}
@@ -998,8 +997,7 @@ class GeneratorApp extends React.Component {
         // Debounced preview update
         if (this.state.showPreview && prevState !== this.state &&
             (prevState.showPreview !== this.state.showPreview ||
-             (prevState.previewUrl === this.state.previewUrl &&
-              prevState.previewSrcdoc === this.state.previewSrcdoc))) {
+             prevState.previewUrl === this.state.previewUrl)) {
             clearTimeout(this._previewTimeout);
             this._previewTimeout = setTimeout(() => {
                 this.updatePreviewUrl();
@@ -1284,36 +1282,22 @@ class GeneratorApp extends React.Component {
         const compressed = pako.deflate(json);
         const binary = String.fromCharCode.apply(null, compressed);
         const encoded = `pako:${btoa(binary)}`;
-        if (this.props.previewScriptUrl) {
-            // VS Code webview mode: use srcdoc because vscode-resource URLs
-            // cannot be used as iframe src (ERR_NAME_NOT_RESOLVED)
-            const bPath = this.props.previewBasePath || '';
-            const nonce = this.props.cspNonce || '';
-            const nonceAttr = nonce ? ` nonce="${nonce}"` : '';
-            const srcdoc = [
-                '<!DOCTYPE html><html><head><meta charset="UTF-8">',
-                '<style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}',
-                '#root{width:100%;height:100%}</style>',
-                '</head><body><div id="root"></div>',
-                `<script${nonceAttr}>window.__PREVIEW_PROJECT_DATA__=${JSON.stringify(encoded)};`,
-                `window.__WEBVIEW_BASE_PATH__=${JSON.stringify(bPath)};</script>`,
-                `<script${nonceAttr} src="${this.props.previewScriptUrl}"></script>`,
-                '</body></html>'
-            ].join('');
-            this.setState({previewUrl: '', previewSrcdoc: srcdoc});
-        } else {
-            const baseUrl = this.props.previewBaseUrl || (
-                window.location.origin +
-                window.location.pathname.replace(/generator\.html$/, 'editor.html')
-            );
-            const url = `${baseUrl}?project=${encodeURIComponent(encoded)}`;
-            this.setState({previewUrl: url, previewSrcdoc: ''});
+        if (this.props.onPreview) {
+            // Embedded mode (VS Code): delegate preview to host via callback
+            this.props.onPreview(encoded);
+            return;
         }
+        const baseUrl = this.props.previewBaseUrl || (
+            window.location.origin +
+            window.location.pathname.replace(/generator\.html$/, 'editor.html')
+        );
+        const url = `${baseUrl}?project=${encodeURIComponent(encoded)}`;
+        this.setState({previewUrl: url});
     }
     togglePreview () {
         this.setState(prev => {
             const next = !prev.showPreview;
-            return {showPreview: next, previewUrl: '', previewSrcdoc: ''};
+            return {showPreview: next, previewUrl: ''};
         }, () => {
             if (this.state.showPreview) {
                 this.updatePreviewUrl();
@@ -3239,62 +3223,69 @@ class GeneratorApp extends React.Component {
 
     render () {
         const {wizardMode} = this.state;
+        const embedded = this.props.embedded;
 
         return (
             <div style={styles.body}>
-                <nav style={styles.navBar}>
-                    <a href="./">
-                        <img
-                            alt="Blockflow"
-                            src={blockflowLogo}
-                            style={styles.navLogo}
-                        />
-                    </a>
-                    <div style={styles.navLinks}>
-                        <a
-                            href="editor.html"
-                            style={styles.navLink}
-                        >Editor</a>
-                        <a
-                            href="generator.html"
-                            style={styles.navLink}
-                        >Generator</a>
-                    </div>
-                </nav>
+                {!embedded && (
+                    <nav style={styles.navBar}>
+                        <a href="./">
+                            <img
+                                alt="Blockflow"
+                                src={blockflowLogo}
+                                style={styles.navLogo}
+                            />
+                        </a>
+                        <div style={styles.navLinks}>
+                            <a
+                                href="editor.html"
+                                style={styles.navLink}
+                            >Editor</a>
+                            <a
+                                href="generator.html"
+                                style={styles.navLink}
+                            >Generator</a>
+                        </div>
+                    </nav>
+                )}
                 {/* Sticky action toolbar - full width */}
                 <div style={styles.stickyToolbar}>
                     <div style={styles.stickyToolbarInner}>
-                        <button
-                            style={{...styles.button, ...styles.downloadBtn, flex: 'none',
-                                padding: '8px 14px', fontSize: '13px'}}
-                            onClick={() => this.handleNewProject()}
-                        >📄 New</button>
-                        <button
-                            style={{...styles.button, ...styles.copyJsonBtn, flex: 'none',
-                                padding: '8px 14px', fontSize: '13px'}}
-                            onClick={() => this.handleLoadFile()}
-                        >📂 Load</button>
-                        <div style={{
-                            width: '1px', height: '24px', background: '#ddd'
-                        }} />
-                        <button
-                            style={{...styles.button, ...styles.downloadBtn, flex: 'none',
-                                padding: '8px 14px', fontSize: '13px'}}
-                            onClick={() => this.handleDownload()}
-                        >⬇ Download</button>
-                        <button
-                            style={{...styles.button, ...styles.copyJsonBtn, flex: 'none',
-                                padding: '8px 14px', fontSize: '13px'}}
-                            onClick={() => this.handleCopyJSON()}
-                        >📋 Copy JSON</button>
-                        <button
-                            style={{...styles.button, ...styles.copyUrlBtn, flex: 'none',
-                                padding: '8px 14px', fontSize: '13px'}}
-                            onClick={() => this.handleCopyUrl()}
-                        >🔗 Copy URL</button>
-                        <div style={{
-                            width: '1px', height: '24px', background: '#ddd'
-                        }} />
+                        {!embedded && (
+                            <React.Fragment>
+                                <button
+                                    style={{...styles.button, ...styles.downloadBtn, flex: 'none',
+                                        padding: '8px 14px', fontSize: '13px'}}
+                                    onClick={() => this.handleNewProject()}
+                                >📄 New</button>
+                                <button
+                                    style={{...styles.button, ...styles.copyJsonBtn, flex: 'none',
+                                        padding: '8px 14px', fontSize: '13px'}}
+                                    onClick={() => this.handleLoadFile()}
+                                >📂 Load</button>
+                                <div style={{
+                                    width: '1px', height: '24px', background: '#ddd'
+                                }} />
+                                <button
+                                    style={{...styles.button, ...styles.downloadBtn, flex: 'none',
+                                        padding: '8px 14px', fontSize: '13px'}}
+                                    onClick={() => this.handleDownload()}
+                                >⬇ Download</button>
+                                <button
+                                    style={{...styles.button, ...styles.copyJsonBtn, flex: 'none',
+                                        padding: '8px 14px', fontSize: '13px'}}
+                                    onClick={() => this.handleCopyJSON()}
+                                >📋 Copy JSON</button>
+                                <button
+                                    style={{...styles.button, ...styles.copyUrlBtn, flex: 'none',
+                                        padding: '8px 14px', fontSize: '13px'}}
+                                    onClick={() => this.handleCopyUrl()}
+                                >🔗 Copy URL</button>
+                                <div style={{
+                                    width: '1px', height: '24px', background: '#ddd'
+                                }} />
+                            </React.Fragment>
+                        )}
                         <button
                             style={{
                                 ...styles.button, flex: 'none',
@@ -3318,18 +3309,21 @@ class GeneratorApp extends React.Component {
                     </div>
                 </div>
                 <div style={styles.container}>
-                    <div style={styles.header}>
-                        <h1 style={styles.h1}>Blockflow Project Generator</h1>
-                        <p style={styles.subtitle}>
-                            Configure your project and download the JSON or copy a URL with the configuration encoded.
-                        </p>
-                        <input
-                            ref={this._fileInput}
-                            type="file"
-                            accept=".json,application/json"
-                            style={{display: 'none'}}
-                            onChange={e => this.handleFileSelected(e)}
-                        />
+                    {!embedded && (
+                        <div style={styles.header}>
+                            <h1 style={styles.h1}>Blockflow Project Generator</h1>
+                            <p style={styles.subtitle}>
+                                Configure your project and download the JSON or copy a URL with the configuration encoded.
+                            </p>
+                        </div>
+                    )}
+                    <input
+                        ref={this._fileInput}
+                        type="file"
+                        accept=".json,application/json"
+                        style={{display: 'none'}}
+                        onChange={e => this.handleFileSelected(e)}
+                    />
                     </div>
 
                     {wizardMode && this.renderWizardNav()}
@@ -3340,7 +3334,7 @@ class GeneratorApp extends React.Component {
                     </div>
                 </div>
 
-                {this.state.showPreview && (this.state.previewUrl || this.state.previewSrcdoc) && (
+                {this.state.showPreview && this.state.previewUrl && (
                     <div style={styles.modalOverlay} onClick={() => this.togglePreview()}>
                         <div
                             style={{
@@ -3370,8 +3364,7 @@ class GeneratorApp extends React.Component {
                                 >✕</button>
                             </div>
                             <iframe
-                                src={this.state.previewSrcdoc ? undefined : this.state.previewUrl}
-                                srcDoc={this.state.previewSrcdoc || undefined}
+                                src={this.state.previewUrl}
                                 style={styles.previewIframe}
                                 title="Editor Preview"
                             />
