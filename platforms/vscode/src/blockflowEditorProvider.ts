@@ -30,8 +30,11 @@ export class BlockflowEditorProvider implements vscode.CustomTextEditorProvider 
     ): Promise<void> {
         webviewPanel.webview.options = getWebviewOptions(this.context.extensionUri);
 
-        const editorHtmlUri = webviewPanel.webview.asWebviewUri(
-            vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'webview', 'editor.html')
+        const scratchScriptUri = webviewPanel.webview.asWebviewUri(
+            vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'webview', 'scratch.js')
+        );
+        const webviewBaseUri = webviewPanel.webview.asWebviewUri(
+            vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'webview')
         );
 
         webviewPanel.webview.html = getHtmlForWebview(
@@ -41,7 +44,8 @@ export class BlockflowEditorProvider implements vscode.CustomTextEditorProvider 
             {
                 allowFrames: true,
                 data: {
-                    previewBaseUrl: editorHtmlUri.toString(),
+                    previewScriptUrl: scratchScriptUri.toString(),
+                    previewBasePath: `${webviewBaseUri.toString()}/`,
                 },
             }
         );

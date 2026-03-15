@@ -47,15 +47,16 @@ const ProjectFileHOC = function (WrappedComponent) {
         constructor (props) {
             super(props);
             const queryParams = queryString.parse(location.search);
+            const projectParam = queryParams.project || window.__PREVIEW_PROJECT_DATA__;
             this.state = {
                 projectFileUrl: null,
-                isLoadingProjectFromUrl: !!queryParams.project
+                isLoadingProjectFromUrl: !!projectParam
             };
         }
         componentDidMount () {
             const queryParams = queryString.parse(location.search);
-            if (queryParams.project) {
-                const value = queryParams.project;
+            const value = queryParams.project || window.__PREVIEW_PROJECT_DATA__;
+            if (value) {
                 if (isUrl(value)) {
                     const resolvedValue = resolveUrl(value);
                     this.setState({projectFileUrl: resolvedValue});

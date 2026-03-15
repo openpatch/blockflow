@@ -21,15 +21,17 @@ history.replaceState = (...args) => {
 };
 
 // Detect preview mode: loaded in an iframe with ?project= parameter
-const isPreviewMode = new URLSearchParams(window.location.search).has('project');
+// or with inline data from srcdoc (VS Code blockflow preview)
+const isPreviewMode = new URLSearchParams(window.location.search).has('project') ||
+    typeof window.__PREVIEW_PROJECT_DATA__ === 'string';
 
 // Base path for static assets (blocks-media, etc.)
 const basePath = window.__WEBVIEW_BASE_PATH__ || './';
 
 let editorState = null;
-let guiRoot = null;
 let vm = null;
 let saveTimeout = null;
+let isInitialLoad = true;
 
 const SAVE_DEBOUNCE_MS = 1000;
 
@@ -53,21 +55,15 @@ function initEditor () {
             canEditTitle
             canSave={false}
         />,
-        container,
-        () => {
-            if (!isPreviewMode) {
-                waitForVM();
-            }
-        }
+        container
     );
 }
 
-function waitForVM () {
-    // The VM is exposed globally by vm-manager-hoc.jsx
+function waitForVM (callback) {
     const check = () => {
         if (window.vm) {
             vm = window.vm;
-            setupProjectChangeListener();
+            callback();
             return;
         }
         setTimeout(check, 100);
@@ -102,27 +98,35 @@ function debouncedSave () {
 }
 
 function loadProject (base64Content) {
-    if (!vm) {
-        // VM not ready yet, wait and retry
-        setTimeout(() => loadProject(base64Content), 200);
-        return;
-    }
+    const doLoad = () => {
+        const buffer = base64ToArrayBuffer(base64Content);
+        vm.loadProject(buffer)
+            .then(() => {
+                if (isInitialLoad) {
+                    isInitialLoad = false;
+                    // Only listen for changes after the real project loads,
+                    // preventing the default Scratch cat from being saved back
+                    setupProjectChangeListener();
+                }
+            })
+            .catch(err => {
+                console.error('Failed to load .sb3 project:', err);
+            });
+    };
 
-    const buffer = base64ToArrayBuffer(base64Content);
-    vm.loadProject(buffer)
-        .then(() => {
-            vm.start();
-        })
-        .catch(err => {
-            console.error('Failed to load .sb3 project:', err);
-        });
+    if (!vm) {
+        waitForVM(doLoad);
+    } else {
+        doLoad();
+    }
 }
 
 if (isPreviewMode) {
-    // Preview mode: just render the editor and let ProjectFileHOC handle ?project=
+    // Preview mode: render the editor and let ProjectFileHOC handle loading
     initEditor();
 } else if (isInVsCode()) {
-    // VS Code editor mode: use postMessage bridge
+    // VS Code editor mode: wait for file content before rendering
+    // to avoid flashing the default Scratch cat project
     onMessage(message => {
         switch (message.type) {
         case 'load':
@@ -137,6 +141,5 @@ if (isPreviewMode) {
         }
     });
 
-    initEditor();
     sendReady();
 }

@@ -17,7 +17,8 @@ history.replaceState = (...args) => {
 let root = null;
 let currentProjectFile = null;
 
-const previewBaseUrl = window.__WEBVIEW_DATA__?.previewBaseUrl || null;
+const previewScriptUrl = window.__WEBVIEW_DATA__?.previewScriptUrl || null;
+const previewBasePath = window.__WEBVIEW_DATA__?.previewBasePath || null;
 
 function renderApp (projectFile) {
     const appTarget = document.getElementById('root');
@@ -33,7 +34,8 @@ function renderApp (projectFile) {
         <GeneratorApp
             initialProjectFile={projectFile}
             onProjectFileChange={handleProjectFileChange}
-            previewBaseUrl={previewBaseUrl}
+            previewScriptUrl={previewScriptUrl}
+            previewBasePath={previewBasePath}
         />
     );
 }
