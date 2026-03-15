@@ -7,7 +7,10 @@ import {AppStateProviderHOC} from '../../../../packages/scratch-gui/src/lib/app-
 import {EditorState} from '../../../../packages/scratch-gui/src/lib/editor-state';
 import HashParserHOC from '../../../../packages/scratch-gui/src/lib/hash-parser-hoc.jsx';
 
-import {sendReady, sendEdit, onMessage, base64ToArrayBuffer, arrayBufferToBase64} from './vscode-bridge.js';
+import {isInVsCode, sendReady, sendEdit, onMessage, base64ToArrayBuffer, arrayBufferToBase64} from './vscode-bridge.js';
+
+// Detect preview mode: loaded in an iframe with ?project= parameter
+const isPreviewMode = new URLSearchParams(window.location.search).has('project');
 
 let editorState = null;
 let guiRoot = null;
@@ -37,8 +40,9 @@ function initEditor () {
         />,
         container,
         () => {
-            // After render, wait for VM to be available
-            waitForVM();
+            if (!isPreviewMode) {
+                waitForVM();
+            }
         }
     );
 }
@@ -99,21 +103,25 @@ function loadProject (base64Content) {
         });
 }
 
-// Listen for messages from the extension
-onMessage(message => {
-    switch (message.type) {
-    case 'load':
-    case 'update':
-        if (!editorState) {
-            initEditor();
+if (isPreviewMode) {
+    // Preview mode: just render the editor and let ProjectFileHOC handle ?project=
+    initEditor();
+} else if (isInVsCode()) {
+    // VS Code editor mode: use postMessage bridge
+    onMessage(message => {
+        switch (message.type) {
+        case 'load':
+        case 'update':
+            if (!editorState) {
+                initEditor();
+            }
+            if (message.content) {
+                loadProject(message.content);
+            }
+            break;
         }
-        if (message.content) {
-            loadProject(message.content);
-        }
-        break;
-    }
-});
+    });
 
-// Initialize the editor and tell the extension we're ready
-initEditor();
-sendReady();
+    initEditor();
+    sendReady();
+}

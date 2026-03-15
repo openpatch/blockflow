@@ -29,10 +29,21 @@ export class BlockflowEditorProvider implements vscode.CustomTextEditorProvider 
         _token: vscode.CancellationToken
     ): Promise<void> {
         webviewPanel.webview.options = getWebviewOptions(this.context.extensionUri);
+
+        const editorHtmlUri = webviewPanel.webview.asWebviewUri(
+            vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'webview', 'editor.html')
+        );
+
         webviewPanel.webview.html = getHtmlForWebview(
             webviewPanel.webview,
             this.context.extensionUri,
-            'blockflow.js'
+            'blockflow.js',
+            {
+                allowFrames: true,
+                data: {
+                    previewBaseUrl: editorHtmlUri.toString(),
+                },
+            }
         );
 
         // Track whether we're currently applying an edit from the webview

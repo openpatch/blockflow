@@ -31,19 +31,29 @@ export function getHtmlForWebview(
     webview: vscode.Webview,
     extensionUri: vscode.Uri,
     scriptName: string,
-    cssName?: string
+    options?: {
+        cssName?: string;
+        data?: Record<string, string>;
+        allowFrames?: boolean;
+    }
 ): string {
     const scriptUri = webview.asWebviewUri(
         vscode.Uri.joinPath(extensionUri, 'dist', 'webview', scriptName)
     );
 
-    const cssUri = cssName
+    const cssUri = options?.cssName
         ? webview.asWebviewUri(
-              vscode.Uri.joinPath(extensionUri, 'dist', 'webview', cssName)
+              vscode.Uri.joinPath(extensionUri, 'dist', 'webview', options.cssName)
           )
         : null;
 
     const nonce = getNonce();
+
+    const scratchHosts = 'https://assets.scratch.mit.edu https://cdn.assets.scratch.mit.edu https://projects.scratch.mit.edu';
+    const frameSrc = options?.allowFrames ? `frame-src ${webview.cspSource};` : '';
+    const dataScript = options?.data
+        ? `<script nonce="${nonce}">window.__WEBVIEW_DATA__ = ${JSON.stringify(options.data)};</script>`
+        : '';
 
     return /* html */ `<!DOCTYPE html>
 <html lang="en">
@@ -52,13 +62,14 @@ export function getHtmlForWebview(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'none';
-        img-src ${webview.cspSource} data: blob:;
+        img-src ${webview.cspSource} data: blob: ${scratchHosts};
         font-src ${webview.cspSource};
         style-src ${webview.cspSource} 'unsafe-inline';
         script-src 'nonce-${nonce}' 'unsafe-eval';
         worker-src blob:;
-        media-src ${webview.cspSource} data: blob:;
-        connect-src ${webview.cspSource} data: blob:;
+        media-src ${webview.cspSource} data: blob: ${scratchHosts};
+        connect-src ${webview.cspSource} data: blob: ${scratchHosts};
+        ${frameSrc}
     ">
     ${cssUri ? `<link rel="stylesheet" href="${cssUri}">` : ''}
     <title>Blockflow</title>
@@ -78,6 +89,7 @@ export function getHtmlForWebview(
 </head>
 <body>
     <div id="root"></div>
+    ${dataScript}
     <script nonce="${nonce}" src="${scriptUri}"></script>
 </body>
 </html>`;

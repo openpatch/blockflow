@@ -202,7 +202,7 @@ const scratchWebviewConfig = createWebviewConfig(
     './webview/scratch/index.jsx'
 );
 
-// Add CopyWebpackPlugin for scratch webview (needs blocks media and workers)
+// Add CopyWebpackPlugin for scratch webview (needs blocks media, workers, and preview HTML)
 scratchWebviewConfig.plugins.push(
     new CopyWebpackPlugin({
         patterns: [
@@ -241,6 +241,10 @@ scratchWebviewConfig.plugins.push(
                 from: 'chunks/vendors-*.js',
                 noErrorOnMissing: true,
                 filter: (resourcePath) => !resourcePath.endsWith('.map')
+            },
+            {
+                from: path.resolve(__dirname, 'webview/preview/editor.html'),
+                to: 'editor.html'
             }
         ]
     })

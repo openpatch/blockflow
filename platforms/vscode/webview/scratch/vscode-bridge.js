@@ -1,20 +1,31 @@
 /**
  * VS Code bridge for scratch editor webview communication.
  * Handles binary .sb3 content via base64 encoding.
+ * Gracefully degrades when not running in a VS Code webview (e.g. preview iframe).
  */
 
 let vscodeApi;
+let isVsCodeContext = typeof acquireVsCodeApi === 'function'; // eslint-disable-line no-undef
 
 export function getVsCodeApi () {
-    if (!vscodeApi) {
-        // eslint-disable-next-line no-undef
-        vscodeApi = acquireVsCodeApi();
+    if (!vscodeApi && isVsCodeContext) {
+        try {
+            // eslint-disable-next-line no-undef
+            vscodeApi = acquireVsCodeApi();
+        } catch {
+            isVsCodeContext = false;
+        }
     }
     return vscodeApi;
 }
 
+export function isInVsCode () {
+    return isVsCodeContext;
+}
+
 export function postMessage (message) {
-    getVsCodeApi().postMessage(message);
+    const api = getVsCodeApi();
+    if (api) api.postMessage(message);
 }
 
 export function onMessage (handler) {

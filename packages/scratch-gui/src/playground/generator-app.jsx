@@ -1282,8 +1282,10 @@ class GeneratorApp extends React.Component {
         const compressed = pako.deflate(json);
         const binary = String.fromCharCode.apply(null, compressed);
         const encoded = `pako:${btoa(binary)}`;
-        const baseUrl = window.location.origin +
-            window.location.pathname.replace(/generator\.html$/, 'editor.html');
+        const baseUrl = this.props.previewBaseUrl || (
+            window.location.origin +
+            window.location.pathname.replace(/generator\.html$/, 'editor.html')
+        );
         const url = `${baseUrl}?project=${encodeURIComponent(encoded)}`;
         this.setState({previewUrl: url});
     }

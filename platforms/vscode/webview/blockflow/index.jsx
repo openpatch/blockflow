@@ -7,6 +7,8 @@ import {sendReady, sendEdit, onMessage} from './vscode-bridge.js';
 let root = null;
 let currentProjectFile = null;
 
+const previewBaseUrl = window.__WEBVIEW_DATA__?.previewBaseUrl || null;
+
 function renderApp (projectFile) {
     const appTarget = document.getElementById('root');
     if (!appTarget) return;
@@ -21,6 +23,7 @@ function renderApp (projectFile) {
         <GeneratorApp
             initialProjectFile={projectFile}
             onProjectFileChange={handleProjectFileChange}
+            previewBaseUrl={previewBaseUrl}
         />
     );
 }
