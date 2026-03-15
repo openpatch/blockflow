@@ -4,6 +4,16 @@ import ReactDomClient from 'react-dom/client';
 import GeneratorApp from '../../../../packages/scratch-gui/src/playground/generator-app.jsx';
 import {sendReady, sendEdit, onMessage} from './vscode-bridge.js';
 
+// Safety-wrap history.pushState/replaceState for VS Code webview compatibility
+const _origPushState = history.pushState.bind(history);
+const _origReplaceState = history.replaceState.bind(history);
+history.pushState = (...args) => {
+    try { _origPushState(...args); } catch (_) { /* ignore in webview */ }
+};
+history.replaceState = (...args) => {
+    try { _origReplaceState(...args); } catch (_) { /* ignore in webview */ }
+};
+
 let root = null;
 let currentProjectFile = null;
 

@@ -60,11 +60,13 @@ export function getHtmlForWebview(
         ? `<script nonce="${nonce}">window.__WEBVIEW_DATA__ = ${JSON.stringify(options.data)};</script>`
         : '';
 
+    // Inject base path for runtime asset resolution (blocks-media, static files)
+    const basePathScript = `<script nonce="${nonce}">window.__WEBVIEW_BASE_PATH__ = "${baseUri}/";</script>`;
+
     return /* html */ `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <base href="${baseUri}/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'none';
@@ -95,6 +97,7 @@ export function getHtmlForWebview(
 </head>
 <body>
     <div id="root"></div>
+    ${basePathScript}
     ${dataScript}
     <script nonce="${nonce}" src="${scriptUri}"></script>
 </body>

@@ -47,7 +47,7 @@ function createWebviewConfig (name, entryPath) {
         output: {
             path: path.resolve(__dirname, 'dist', 'webview'),
             filename: `${name}.js`,
-            publicPath: '',
+            publicPath: 'auto',
             assetModuleFilename: 'static/assets/[name].[hash][ext][query]'
         },
         resolve: {

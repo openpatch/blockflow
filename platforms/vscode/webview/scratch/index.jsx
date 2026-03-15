@@ -9,8 +9,22 @@ import HashParserHOC from '../../../../packages/scratch-gui/src/lib/hash-parser-
 
 import {isInVsCode, sendReady, sendEdit, onMessage, base64ToArrayBuffer, arrayBufferToBase64} from './vscode-bridge.js';
 
+// Safety-wrap history.pushState/replaceState: VS Code webviews may block
+// cross-origin state changes that non-essential scratch-gui routing attempts.
+const _origPushState = history.pushState.bind(history);
+const _origReplaceState = history.replaceState.bind(history);
+history.pushState = (...args) => {
+    try { _origPushState(...args); } catch (_) { /* ignore in webview */ }
+};
+history.replaceState = (...args) => {
+    try { _origReplaceState(...args); } catch (_) { /* ignore in webview */ }
+};
+
 // Detect preview mode: loaded in an iframe with ?project= parameter
 const isPreviewMode = new URLSearchParams(window.location.search).has('project');
+
+// Base path for static assets (blocks-media, etc.)
+const basePath = window.__WEBVIEW_BASE_PATH__ || './';
 
 let editorState = null;
 let guiRoot = null;
@@ -35,6 +49,7 @@ function initEditor () {
     ReactDOM.render(
         <WrappedGui
             appState={editorState}
+            basePath={basePath}
             canEditTitle
             canSave={false}
         />,
