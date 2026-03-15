@@ -43,10 +43,10 @@
     ]
   },
   "scripts": {
-    "build": "webpack --mode production",
+    "build": "NODE_ENV=production webpack --mode production",
     "build:dev": "webpack --mode development",
     "watch": "webpack --mode development --watch",
-    "package": "vsce package",
+    "package": "npm run build && vsce package",
     "clean": "rimraf dist"
   },
   "devDependencies": {

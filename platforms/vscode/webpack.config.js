@@ -32,7 +32,7 @@ const extensionConfig = {
             }
         ]
     },
-    devtool: 'nosources-source-map'
+    devtool: process.env.NODE_ENV === 'production' ? false : 'nosources-source-map'
 };
 
 /**
@@ -183,7 +183,7 @@ function createWebviewConfig (name, entryPath) {
                 Buffer: ['buffer', 'Buffer']
             })
         ],
-        devtool: 'source-map',
+        devtool: process.env.NODE_ENV === 'production' ? false : 'source-map',
         performance: {
             hints: false
         }
@@ -227,18 +227,20 @@ scratchWebviewConfig.plugins.push(
             },
             {
                 context: path.resolve(__dirname, '../../node_modules/@scratch/scratch-vm/dist/web'),
-                from: 'extension-worker.{js,js.map}',
+                from: 'extension-worker.js',
                 noErrorOnMissing: true
             },
             {
                 context: path.resolve(__dirname, '../../node_modules/scratch-storage/dist/web'),
-                from: 'chunks/fetch-worker.*.{js,js.map}',
-                noErrorOnMissing: true
+                from: 'chunks/fetch-worker.*.js',
+                noErrorOnMissing: true,
+                filter: (resourcePath) => !resourcePath.endsWith('.map')
             },
             {
                 context: path.resolve(__dirname, '../../node_modules/scratch-storage/dist/web'),
-                from: 'chunks/vendors-*.{js,js.map}',
-                noErrorOnMissing: true
+                from: 'chunks/vendors-*.js',
+                noErrorOnMissing: true,
+                filter: (resourcePath) => !resourcePath.endsWith('.map')
             }
         ]
     })
