@@ -998,7 +998,8 @@ class GeneratorApp extends React.Component {
         // Debounced preview update
         if (this.state.showPreview && prevState !== this.state &&
             (prevState.showPreview !== this.state.showPreview ||
-             prevState.previewUrl === this.state.previewUrl)) {
+             (prevState.previewUrl === this.state.previewUrl &&
+              prevState.previewSrcdoc === this.state.previewSrcdoc))) {
             clearTimeout(this._previewTimeout);
             this._previewTimeout = setTimeout(() => {
                 this.updatePreviewUrl();
@@ -1310,7 +1311,7 @@ class GeneratorApp extends React.Component {
     togglePreview () {
         this.setState(prev => {
             const next = !prev.showPreview;
-            return {showPreview: next, previewUrl: ''};
+            return {showPreview: next, previewUrl: '', previewSrcdoc: ''};
         }, () => {
             if (this.state.showPreview) {
                 this.updatePreviewUrl();
@@ -3337,7 +3338,7 @@ class GeneratorApp extends React.Component {
                     </div>
                 </div>
 
-                {this.state.showPreview && this.state.previewUrl && (
+                {this.state.showPreview && (this.state.previewUrl || this.state.previewSrcdoc) && (
                     <div style={styles.modalOverlay} onClick={() => this.togglePreview()}>
                         <div
                             style={{
