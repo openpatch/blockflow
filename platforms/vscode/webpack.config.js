@@ -47,7 +47,8 @@ function createWebviewConfig (name, entryPath) {
         output: {
             path: path.resolve(__dirname, 'dist', 'webview'),
             filename: `${name}.js`,
-            publicPath: ''
+            publicPath: '',
+            assetModuleFilename: 'static/assets/[name].[hash][ext][query]'
         },
         resolve: {
             extensions: ['.mjs', '.cjs', '.mjsx', '.cjsx', '.jsx', '.ts', '.tsx', '.js', '.json'],
@@ -202,7 +203,7 @@ const scratchWebviewConfig = createWebviewConfig(
     './webview/scratch/index.jsx'
 );
 
-// Add CopyWebpackPlugin for scratch webview (needs blocks media, workers, and preview HTML)
+// Add CopyWebpackPlugin for scratch webview (needs blocks media, workers, static files, and preview HTML)
 scratchWebviewConfig.plugins.push(
     new CopyWebpackPlugin({
         patterns: [
@@ -223,6 +224,12 @@ scratchWebviewConfig.plugins.push(
                 ),
                 to: 'static/blocks-media/high-contrast',
                 force: true,
+                noErrorOnMissing: true
+            },
+            // Copy static files from scratch-gui (kenny-fish, microbit, etc.)
+            {
+                from: path.resolve(__dirname, '../../packages/scratch-gui/static'),
+                to: 'static',
                 noErrorOnMissing: true
             },
             {

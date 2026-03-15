@@ -41,6 +41,11 @@ export function getHtmlForWebview(
         vscode.Uri.joinPath(extensionUri, 'dist', 'webview', scriptName)
     );
 
+    // Base URI for relative URL resolution (images, fonts, etc. from webpack asset modules)
+    const baseUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(extensionUri, 'dist', 'webview')
+    );
+
     const cssUri = options?.cssName
         ? webview.asWebviewUri(
               vscode.Uri.joinPath(extensionUri, 'dist', 'webview', options.cssName)
@@ -59,6 +64,7 @@ export function getHtmlForWebview(
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <base href="${baseUri}/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'none';
