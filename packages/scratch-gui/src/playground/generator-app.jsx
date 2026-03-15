@@ -3324,7 +3324,6 @@ class GeneratorApp extends React.Component {
                         style={{display: 'none'}}
                         onChange={e => this.handleFileSelected(e)}
                     />
-                    </div>
 
                     {wizardMode && this.renderWizardNav()}
 
