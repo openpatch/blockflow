@@ -46,6 +46,7 @@ Run workspace-wide commands from the repo root:
 
 ```sh
 npm run build    # Build all packages (production)
+npm run build:embedded # Build and package the browser editor, player, and generator
 npm test         # Test all packages
 npm run clean    # Clean all packages
 ```
@@ -134,6 +135,10 @@ order. The same applies to the root `package.json`.
 
 **Do not publish packages manually.** Every package has a `prepublishOnly` script that will error if you try.
 Publishing is handled exclusively by the CI release pipeline.
+
+The browser bundle is separate from npm releases. `npm run build:embedded` creates
+`dist/blockflow/dist-embedded.zip`. Tags named `blockflow-v<version>` publish it to GitHub Releases
+through `.github/workflows/release-embedded.yml`; manual runs create an Actions artifact only.
 
 ### VS Code extension releases
 

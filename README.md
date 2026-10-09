@@ -165,6 +165,18 @@ npm start
 
 Then open `http://localhost:8601` in your browser.
 
+## Browser Bundle
+
+Run `npm run build:embedded` from the repository root to create `dist/blockflow/dist-embedded.zip`
+(requires the `zip` command).
+The archive includes `editor.html`, `player.html`, `generator.html`, shared JavaScript chunks,
+workers, static assets, and license notices. Source maps and development playgrounds are excluded.
+Extract it into a directory served over HTTP; the bundle supports nested paths and iframe embeds.
+
+Push a `blockflow-v<version>` tag to publish the archive as a GitHub Release asset through
+`.github/workflows/release-embedded.yml`. A manual workflow run builds an Actions artifact for inspection.
+Consumers can pin `https://github.com/openpatch/blockflow/releases/download/blockflow-v<version>/dist-embedded.zip`.
+
 ## License
 
 This project is licensed under [AGPL-3.0-only](LICENSE), the same license as the upstream Scratch editor.

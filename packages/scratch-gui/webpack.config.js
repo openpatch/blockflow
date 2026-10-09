@@ -249,6 +249,43 @@ const buildConfig = baseConfig.clone()
         ]
     }));
 
+const embeddedConfig = baseConfig.clone()
+    .merge({
+        entry: {
+            editor: './src/playground/index.jsx',
+            player: './src/playground/player.jsx',
+            generator: './src/playground/generator.jsx'
+        },
+        devtool: false,
+        output: {
+            path: path.resolve(__dirname, 'build-embedded'),
+            publicPath: 'auto',
+            clean: true
+        },
+        optimization: {
+            runtimeChunk: 'single',
+            splitChunks: {chunks: 'all'}
+        }
+    });
+
+for (const [entry, title] of Object.entries({
+    editor: 'Blockflow Editor',
+    player: 'Blockflow Player',
+    generator: 'Blockflow Project Generator'
+})) {
+    embeddedConfig.addPlugin(new HtmlWebpackPlugin({
+        ...commonHtmlWebpackPluginOptions,
+        chunks: [entry],
+        filename: `${entry}.html`,
+        template: 'src/playground/index.ejs',
+        title
+    }));
+}
+
+embeddedConfig.addPlugin(new CopyWebpackPlugin({
+    patterns: [{from: 'static', to: 'static'}]
+}));
+
 // Skip building `dist/` unless explicitly requested
 // It roughly doubles build time and isn't needed for `scratch-gui` development
 // If you need non-production `dist/` for local dev, such as for `scratch-www` work, you can run something like:
@@ -259,6 +296,7 @@ let config;
 switch (process.env.BUILD_TYPE) {
 case 'dist': config = distConfig.get(); break;
 case 'dist-standalone': config = distStandaloneConfig.get(); break;
+case 'embedded': config = embeddedConfig.get(); break;
 default: config = buildConfig.get(); break;
 }
 

@@ -27,6 +27,7 @@
   ],
   "scripts": {
     "build": "cross-env NODE_ENV=production npm run --workspaces build",
+    "build:embedded": "cross-env NODE_ENV=production npm run build --workspace=packages/task-herder --workspace=packages/scratch-storage --workspace=packages/scratch-svg-renderer --workspace=packages/scratch-paint --workspace=packages/scratch-render --workspace=packages/scratch-vm && npm run build:embedded --workspace=packages/scratch-gui",
     "clean": "npm run --workspaces clean",
     "prepare": "husky install",
     "refresh-gh-workflow": "ts-node scripts/update-gha-workflows.ts",

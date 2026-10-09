@@ -12,6 +12,7 @@ npm-*
 
 # Build
 /build
+/build-embedded
 /dist
 /.opt-in
 

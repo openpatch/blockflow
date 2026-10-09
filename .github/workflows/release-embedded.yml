@@ -1,0 +1,51 @@
+name: Release Browser Bundle
+
+on:
+  push:
+    tags:
+      - 'blockflow-v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          cache: npm
+          node-version-file: .nvmrc
+
+      - uses: ./.github/actions/install-dependencies
+
+      - name: Build browser bundle
+        run: npm run build:embedded
+
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: blockflow-browser
+          path: dist/blockflow/dist-embedded.zip
+          if-no-files-found: error
+
+      - name: Publish GitHub release
+        if: startsWith(github.ref, 'refs/tags/blockflow-v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: >-
+          gh release create "$RELEASE_TAG" dist/blockflow/dist-embedded.zip
+          --verify-tag --title "Blockflow ${RELEASE_TAG#blockflow-v}"
+          --notes "Browser bundle with editor.html, player.html, generator.html, workers, assets, and license notices. Extract and serve over HTTP."
