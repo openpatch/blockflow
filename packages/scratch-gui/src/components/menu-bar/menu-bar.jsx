@@ -421,7 +421,13 @@ class MenuBar extends React.Component {
                     </div>
                 </div>
 
-                {aboutButton}
+                {this.props.onClickAbout && (
+                    <AboutMenu
+                        onClick={this.props.onClickAbout}
+                        isRtl={this.props.isRtl}
+                        depth={1}
+                    />
+                )}
             </Box>
         );
     }

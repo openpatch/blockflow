@@ -56,6 +56,7 @@ function initEditor () {
         <WrappedGui
             appState={editorState}
             basePath={basePath}
+            projectId={isPreviewMode ? '0' : null}
             canEditTitle
             canSave={false}
         />,

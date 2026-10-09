@@ -64,6 +64,7 @@ function createWebviewConfig (name, entryPath) {
                 '@scratch/scratch-gui': path.resolve(__dirname, '../../packages/scratch-gui/src'),
                 '@scratch/scratch-vm': path.resolve(__dirname, '../../packages/scratch-vm/src'),
                 '@scratch/scratch-render': path.resolve(__dirname, '../../packages/scratch-render/src'),
+                '@scratch/scratch-storage': path.resolve(__dirname, '../../packages/scratch-storage/src/index.ts'),
                 '@scratch/scratch-svg-renderer': path.resolve(__dirname, '../../packages/scratch-svg-renderer/src')
             }
         },
@@ -238,13 +239,13 @@ scratchWebviewConfig.plugins.push(
                 noErrorOnMissing: true
             },
             {
-                context: path.resolve(__dirname, '../../node_modules/scratch-storage/dist/web'),
+                context: path.resolve(__dirname, '../../node_modules/@scratch/scratch-storage/dist/web'),
                 from: 'chunks/fetch-worker.*.js',
                 noErrorOnMissing: true,
                 filter: (resourcePath) => !resourcePath.endsWith('.map')
             },
             {
-                context: path.resolve(__dirname, '../../node_modules/scratch-storage/dist/web'),
+                context: path.resolve(__dirname, '../../node_modules/@scratch/scratch-storage/dist/web'),
                 from: 'chunks/vendors-*.js',
                 noErrorOnMissing: true,
                 filter: (resourcePath) => !resourcePath.endsWith('.map')

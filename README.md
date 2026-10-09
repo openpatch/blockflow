@@ -140,9 +140,14 @@ The `packages` directory contains:
 
 - **`scratch-gui`** — Editor UI, menus, and the glue that brings the other modules together. Includes the project file system, generator, and player mode.
 - **`scratch-vm`** — Virtual machine that runs Scratch projects.
+- **`scratch-storage`** — Loads and caches project assets.
+- **`scratch-paint`** — Costume and backdrop editor.
 - **`scratch-render`** — Renders backdrops, sprites, and clones on the stage.
 - **`scratch-svg-renderer`** — Processes SVG images for use in Scratch projects.
 - **`task-herder`** — Async task queue with token-bucket rate limiting and concurrency control.
+- **`scratch-media-lib-scripts`** — Builds the editor's media libraries.
+
+The VS Code extension is in [`platforms/vscode`](platforms/vscode/README.md).
 
 ## Getting Started
 

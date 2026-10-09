@@ -68,10 +68,11 @@ export function getHtmlForWebview(
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'none';
         img-src ${webview.cspSource} data: blob: ${scratchHosts};
-        font-src ${webview.cspSource};
+        font-src ${webview.cspSource} data:;
         style-src ${webview.cspSource} 'unsafe-inline';
-        script-src 'nonce-${nonce}' 'unsafe-eval';
-        worker-src blob:;
+        script-src ${webview.cspSource} 'nonce-${nonce}' 'unsafe-eval';
+        worker-src ${webview.cspSource} blob:;
+        frame-src 'self';
         media-src ${webview.cspSource} data: blob: ${scratchHosts};
         connect-src ${webview.cspSource} data: blob: ${scratchHosts};
     ">
