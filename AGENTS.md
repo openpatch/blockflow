@@ -135,6 +135,13 @@ order. The same applies to the root `package.json`.
 **Do not publish packages manually.** Every package has a `prepublishOnly` script that will error if you try.
 Publishing is handled exclusively by the CI release pipeline.
 
+### VS Code extension releases
+
+`.github/workflows/release-vscode.yml` builds the workspaces and publishes `platforms/vscode` to the
+VS Code Marketplace and Open VSX on `vscode-v<version>` tags. The tag must match the extension's
+`package.json` version. Publishing uses the `VSCE_TOKEN` and `OVSX_TOKEN` repository secrets.
+See `platforms/vscode/README.md` for the release commands.
+
 ## Before submitting changes
 
 Review all changes and confirm:

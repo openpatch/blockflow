@@ -18,7 +18,10 @@ Simply open a `.blockflow` or `.sb3` file in VS Code. The extension will automat
 
 ```bash
 # Install dependencies (from monorepo root)
-npm install
+npm ci
+
+# Build all workspaces, including the extension and its worker dependencies
+npm run build
 
 # Build the extension
 cd platforms/vscode
@@ -30,3 +33,30 @@ npm run watch
 # Package the extension as .vsix
 npm run package
 ```
+
+## Releases
+
+The `Release VS Code Extension` workflow publishes to the VS Code Marketplace and Open VSX when a
+`vscode-v<version>` tag is pushed. The tag must match the version in `platforms/vscode/package.json`.
+The workflow builds all workspaces, packages the bundled extension without npm dependencies, and saves
+the `.vsix` as a workflow artifact before publishing the same file to both registries.
+
+Configure these repository secrets for the `openpatch` publisher:
+
+- `VSCE_TOKEN`: VS Code Marketplace personal access token with Marketplace management permission.
+- `OVSX_TOKEN`: Open VSX personal access token with access to the `openpatch` namespace.
+
+To release, update the extension version and root lockfile, commit those changes, then push the matching tag.
+For example, from the monorepo root:
+
+```bash
+npm version 0.1.1 --workspace=platforms/vscode --no-git-tag-version
+git add platforms/vscode/package.json package-lock.json
+git commit -m "chore(vscode): release 0.1.1"
+git tag vscode-v0.1.1
+git push origin HEAD
+git push origin vscode-v0.1.1
+```
+
+If publishing succeeds in one registry but fails in the other, rerun the failed workflow. Both publish
+commands skip versions that already exist.

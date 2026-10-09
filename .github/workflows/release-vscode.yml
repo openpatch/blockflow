@@ -1,0 +1,53 @@
+name: Release VS Code Extension
+
+on:
+  push:
+    tags:
+      - 'vscode-v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          cache: npm
+          node-version-file: .nvmrc
+      - name: Check release version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          version=$(node -p "require('./platforms/vscode/package.json').version")
+          if [[ "$RELEASE_TAG" != "vscode-v$version" ]]; then
+            echo "Expected tag vscode-v$version for platforms/vscode/package.json, got $RELEASE_TAG" >&2
+            exit 1
+          fi
+      - uses: ./.github/actions/install-dependencies
+      - name: Build packages
+        run: npm run build
+      - name: Package VS Code extension
+        run: npm exec --workspace=platforms/vscode -- vsce package --no-dependencies --out blockflow-vscode.vsix
+      - name: Upload VSIX
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: ${{ github.ref_name }}
+          path: platforms/vscode/blockflow-vscode.vsix
+          if-no-files-found: error
+      - name: Publish to VS Code Marketplace
+        run: npm exec --workspace=platforms/vscode -- vsce publish --packagePath blockflow-vscode.vsix --skip-duplicate
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
+      - name: Publish to Open VSX
+        run: npx --yes ovsx@0.10.6 publish platforms/vscode/blockflow-vscode.vsix --skip-duplicate
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_TOKEN }}
