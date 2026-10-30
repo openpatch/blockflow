@@ -177,6 +177,118 @@ Push a `blockflow-v<version>` tag to publish the archive as a GitHub Release ass
 `.github/workflows/release-embedded.yml`. A manual workflow run builds an Actions artifact for inspection.
 Consumers can pin `https://github.com/openpatch/blockflow/releases/download/blockflow-v<version>/dist-embedded.zip`.
 
+## Embedding with a message protocol
+
+Besides the `?project=` URL parameter, the bundle ships two host-driven entries:
+`embed-editor.html` (Scratch editor for `.sb3` projects) and `embed-generator.html`
+(blockflow project file generator). They render nothing until the embedding host page
+loads a document into them over `postMessage`, which lets hosts such as
+[Hyperbook](https://github.com/openpatch/hyperbook) open and save projects inside their own UI.
+`manifest.json` in the bundle root lists the bundle `version`, source `commit`, and
+available `entries` so hosts can assert the version they serve.
+
+### Protocol
+
+| Direction | Message | Meaning |
+| --- | --- | --- |
+| embed → host | `{type:"ready", version, entry}` | bundle is up; host sends `load`. `entry` is `"editor"` or `"generator"` |
+| host → embed | `{type:"load", content, encoding, locale?}` | the document: `.sb3` bytes (`encoding:"base64"`) for the editor, project-file JSON (`encoding:"utf8"`) for the generator. `locale` overrides the detected editor locale |
+| host → embed | `{type:"update", …}` | like `load`, but for an external change (e.g. host-side undo) |
+| host → embed | `{type:"save"}` | host wants the current document now (its Ctrl/⌘+S) |
+| embed → host | `{type:"change", content, encoding}` | debounced (~1 s) edits |
+| embed → host | `{type:"saved", content, encoding}` | authoritative answer to `save`, freshly serialized |
+| embed → host | `{type:"error", message}` | e.g. undecodable project |
+| embed → host | `{type:"preview", url}` | generator only: a `pako:`-encoded project URL a host may open in a nested `editor.html?project=<url>` player |
+
+The editor does not report the initial `load` as a `change`; the generator skips
+`change` messages whose content equals the last sent document (no echo loops).
+
+### Origin allowlist
+
+Incoming messages are accepted only from the parent window (`event.source === window.parent`)
+and only from the bundle's own origin (same-origin embedding) — or from origins listed
+in the `embedOrigin` query parameter:
+
+```text
+embed-editor.html?embedOrigin=https://a.example,https://b.example
+```
+
+Outgoing messages are posted with an explicit target origin (never `*`): the origin
+learned from the first accepted host message, an unambiguous `embedOrigin` entry, the
+(embedded) referrer origin, or the bundle's own origin.
+
+### Recommended host CSP
+
+If you serve the bundle entries behind your own server, apply this CSP to their documents
+(adapted from the VS Code extension's webview CSP; `script-src` needs `'unsafe-eval'` because
+scratch-vm compiles scripts with `new Function`). Add your host origin to `frame-ancestors`:
+
+```text
+default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' data: blob: https://assets.scratch.mit.edu https://cdn.assets.scratch.mit.edu https://projects.scratch.mit.edu; worker-src 'self' blob:; frame-src 'self' blob: data:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'
+```
+
+### Minimal host for the editor
+
+```html
+<iframe id="editor" src="/assets/blockflow/embed-editor.html"></iframe>
+<script>
+    const frame = document.getElementById('editor');
+    let embedOrigin = null;
+    window.addEventListener('message', event => {
+        if (event.source !== frame.contentWindow) return;
+        embedOrigin = event.origin;
+        switch (event.data.type) {
+        case 'ready':
+            fetch(bookProjectSb3Url)
+                .then(response => response.arrayBuffer())
+                .then(buffer => {
+                    const binary = Array.from(new Uint8Array(buffer), b => String.fromCharCode(b)).join('');
+                    frame.contentWindow.postMessage({
+                        type: 'load', content: btoa(binary), encoding: 'base64'
+                    }, embedOrigin);
+                });
+            break;
+        case 'change':
+            saveToBook(event.data.content); // debounced, base64 .sb3
+            break;
+        }
+    });
+    window.addEventListener('keydown', event => {
+        if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+            event.preventDefault();
+            frame.contentWindow.postMessage({type: 'save'}, embedOrigin);
+        }
+    });
+</script>
+```
+
+### Minimal host for the generator
+
+```html
+<iframe id="generator" src="/assets/blockflow/embed-generator.html"></iframe>
+<script>
+    const frame = document.getElementById('generator');
+    let embedOrigin = null;
+    window.addEventListener('message', event => {
+        if (event.source !== frame.contentWindow) return;
+        embedOrigin = event.origin;
+        switch (event.data.type) {
+        case 'ready':
+            frame.contentWindow.postMessage({
+                type: 'load', content: JSON.stringify(bookProjectFile), encoding: 'utf8'
+            }, embedOrigin);
+            break;
+        case 'change':
+            saveToBook(event.data.content); // project-file JSON, utf8
+            break;
+        }
+    });
+</script>
+```
+
+The tests in `packages/scratch-gui/test/playwright/embed-protocol.spec.js` exercise the
+full protocol against a served `build-embedded/` bundle.
+
 ## License
 
 This project is licensed under [AGPL-3.0-only](LICENSE), the same license as the upstream Scratch editor.

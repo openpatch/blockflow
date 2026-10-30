@@ -1,5 +1,5 @@
 import {execFileSync} from 'node:child_process';
-import {copyFile, readdir, rm, mkdir, writeFile} from 'node:fs/promises';
+import {copyFile, readFile, readdir, rm, mkdir, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -26,13 +26,25 @@ for (const notice of ['LICENSE', 'TRADEMARK']) {
     await copyFile(path.join(repoRoot, notice), path.join(bundleDir, notice));
 }
 const revision = execFileSync('git', ['rev-parse', 'HEAD'], {cwd: repoRoot, encoding: 'utf8'}).trim();
+
+// manifest.json lets consumers assert which bundle version they are serving
+const version = JSON.parse(await readFile(path.join(guiRoot, 'package.json'), 'utf8')).version;
+const entries = (await readdir(bundleDir))
+    .filter(name => name.endsWith('.html'))
+    .sort();
+await writeFile(path.join(bundleDir, 'manifest.json'),
+    `${JSON.stringify({version, commit: revision, entries}, null, 2)}\n`);
+
 await writeFile(path.join(bundleDir, 'SOURCE.md'),
     `# Blockflow browser bundle\n\n` +
     `Source: https://github.com/openpatch/blockflow/tree/${revision}\n\n` +
     `Use Node.js from .nvmrc, the npm version in package.json devDependencies, and the zip command.\n` +
     `Build with npm ci and npm run build:embedded.\n` +
     `Serve this directory over HTTP and open editor.html, player.html, or generator.html.\n` +
-    `Project files are supplied through the ?project= URL parameter.\n`);
+    `embed-editor.html and embed-generator.html speak the host message protocol;\n` +
+    `see manifest.json for the bundle version, source commit, and entries.\n` +
+    `Project files are supplied through the ?project= URL parameter,\n` +
+    `or via the message protocol on the embed entries.\n`);
 await mkdir(releaseDir, {recursive: true});
 await rm(archivePath, {force: true});
 execFileSync('zip', ['-q', '-r', '-9', archivePath, '.'], {cwd: bundleDir, stdio: 'inherit'});

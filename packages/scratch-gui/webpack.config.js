@@ -252,9 +252,11 @@ const buildConfig = baseConfig.clone()
 const embeddedConfig = baseConfig.clone()
     .merge({
         entry: {
-            editor: './src/playground/index.jsx',
-            player: './src/playground/player.jsx',
-            generator: './src/playground/generator.jsx'
+            'editor': './src/playground/index.jsx',
+            'player': './src/playground/player.jsx',
+            'generator': './src/playground/generator.jsx',
+            'embed-editor': './src/playground/embed-editor.jsx',
+            'embed-generator': './src/playground/embed-generator.jsx'
         },
         devtool: false,
         output: {
@@ -269,9 +271,11 @@ const embeddedConfig = baseConfig.clone()
     });
 
 for (const [entry, title] of Object.entries({
-    editor: 'Blockflow Editor',
-    player: 'Blockflow Player',
-    generator: 'Blockflow Project Generator'
+    'editor': 'Blockflow Editor',
+    'player': 'Blockflow Player',
+    'generator': 'Blockflow Project Generator',
+    'embed-editor': 'Blockflow Editor (Embed)',
+    'embed-generator': 'Blockflow Project Generator (Embed)'
 })) {
     embeddedConfig.addPlugin(new HtmlWebpackPlugin({
         ...commonHtmlWebpackPluginOptions,
